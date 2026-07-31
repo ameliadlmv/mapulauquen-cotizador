@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotizador · Mapulauquen</title>
+<link rel="icon" type="image/png" href="mapulauquen-logo-pizarra.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Archivo:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pizarra:#4D4753;
+    --grafito:#2E2A35;
+    --bruma:#83868B;
+    --liquen:#7C8466;
+    --piedra:#B8B3AD;
+    --arena:#E6E1D8;
+    --lino:#F3F1EC;
+    --hueso:#FAF9F6;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--lino);
+    color:var(--grafito);
+    font-family:'Archivo', sans-serif;
+    font-weight:300;
+    line-height:1.5;
+  }
+  a{color:inherit;}
+
+  header.hero{
+    background:var(--grafito);
+    color:var(--hueso);
+    padding:32px 24px 26px;
+  }
+  .hero-inner{
+    max-width:1180px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+  .hero-inner img{
+    height:52px;
+    width:auto;
+    display:block;
+  }
+  .hero-text h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:1.4rem;
+    margin:0 0 4px;
+  }
+  .hero-text p{
+    margin:0;
+    color:var(--piedra);
+    font-weight:300;
+    font-size:0.88rem;
+    letter-spacing:0.02em;
+  }
+
+  .backwrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:18px 24px 0;
+  }
+  .backlink{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--bruma);
+    text-decoration:none;
+  }
+  .backlink:hover{color:var(--liquen);}
+
+  main{
+    max-width:1180px;
+    margin:0 auto;
+    padding:20px 24px 80px;
+    display:grid;
+    grid-template-columns:1fr 380px;
+    gap:24px;
+    align-items:start;
+  }
+
+  .panel{
+    background:var(--hueso);
+    border:1px solid var(--arena);
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .panel + .panel{ margin-top:20px; }
+  .panel-title{
+    background:var(--grafito);
+    color:var(--hueso);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:0.85rem;
+    letter-spacing:0.04em;
+    padding:13px 20px;
+  }
+  .panel-body{ padding:20px; }
+
+  .form-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-bottom:16px;
+  }
+  .form-row.three{ grid-template-columns:1fr 1fr 1fr; }
+  .form-row.full{ grid-template-columns:1fr; }
+
+  .field label{
+    display:block;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.66rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--bruma);
+    margin-bottom:6px;
+  }
+  .field select,
+  .field input[type="date"],
+  .field input[type="time"],
+  .field input[type="number"],
+  .field input[type="text"]{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid var(--piedra);
+    border-radius:6px;
+    font-family:'Archivo', sans-serif;
+    font-size:0.9rem;
+    color:var(--grafito);
+    background:var(--lino);
+    appearance:none;
+  }
+  .field select[multiple]{ height:66px; padding:6px; }
+  .field select:focus,
+  .field input:focus{
+    outline:none;
+    border-color:var(--liquen);
+  }
+
+  .tipo-tabs{
+    display:flex;
+    border:1px solid var(--piedra);
+    border-radius:8px;
+    overflow:hidden;
+    margin-bottom:18px;
+  }
+  .tipo-tab{
+    flex:1;
+    padding:10px;
+    text-align:center;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.76rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    cursor:pointer;
+    background:var(--lino);
+    color:var(--bruma);
+    border:none;
+    font-weight:500;
+  }
+  .tipo-tab.active{ background:var(--grafito); color:var(--hueso); }
+
+  .cabanas-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .cabana-card{
+    border:1.5px solid var(--arena);
+    border-radius:10px;
+    padding:12px 10px;
+    cursor:pointer;
+    background:var(--hueso);
+    position:relative;
+  }
+  .cabana-card:hover{ border-color:var(--liquen); }
+  .cabana-card.selected{
+    border-color:var(--grafito);
+    background:var(--grafito);
+    color:var(--hueso);
+  }
+  .cabana-card.selected .cab-detail{ color:var(--piedra); }
+  .cabana-card.disabled{ opacity:0.4; cursor:not-allowed; }
+  .cab-icon{ font-size:1.25rem; margin-bottom:4px; display:block; }
+  .cab-name{ font-family:'Space Grotesk', sans-serif; font-size:0.92rem; font-weight:600; display:block; }
+  .cab-detail{ font-size:0.68rem; color:var(--bruma); letter-spacing:0.02em; }
+  .cab-badge{
+    position:absolute; top:6px; right:6px;
+    font-size:0.6rem; background:var(--liquen); color:var(--hueso);
+    padding:1px 6px; border-radius:10px; font-weight:500;
+    font-family:'Space Grotesk', sans-serif;
+  }
+  .cabana-card.selected .cab-badge{ background:var(--piedra); color:var(--grafito); }
+
+  .precio-rango{
+    background:var(--lino);
+    border-radius:8px;
+    padding:12px 16px;
+    margin-bottom:4px;
+  }
+  .precio-rango h4{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--bruma); margin:0 0 8px;
+  }
+  .rango-row{ display:flex; justify-content:space-between; font-size:0.82rem; flex-wrap:wrap; gap:6px; }
+  .rango-min{ color:var(--liquen); }
+  .rango-max{ color:#a15c4a; }
+
+  /* RESULTADO */
+  .resultado{ position:sticky; top:20px; }
+  .resultado .panel-body{ padding:0; }
+
+  .res-header{ background:var(--grafito); padding:18px 22px; }
+  .res-header h2{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:1.2rem;
+    color:var(--hueso); margin:0; display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  }
+  .res-header .res-cabana{
+    font-size:0.7rem; color:var(--piedra); letter-spacing:0.06em; text-transform:uppercase;
+    margin-top:4px;
+  }
+
+  .temp-indicator{
+    display:inline-block; font-family:'Space Grotesk', sans-serif;
+    font-size:0.62rem; padding:2px 9px; border-radius:10px;
+    letter-spacing:0.06em; text-transform:uppercase; font-weight:500;
+  }
+  .temp-baja{ background:var(--liquen); color:var(--hueso); }
+  .temp-media{ background:#c9a24a; color:var(--hueso); }
+  .temp-alta{ background:#a15c4a; color:var(--hueso); }
+
+  .res-body{ padding:18px 22px; }
+  .res-line{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:7px 0; border-bottom:1px dotted var(--arena); font-size:0.86rem;
+  }
+  .res-line:last-child{ border-bottom:none; }
+  .res-line .label{ color:var(--bruma); }
+  .res-line .value{ font-weight:500; }
+
+  .res-total{
+    background:var(--arena);
+    padding:15px 22px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .res-total .tot-label{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--grafito);
+  }
+  .res-total .tot-amount{
+    font-family:'Space Grotesk', sans-serif; font-size:1.7rem; font-weight:700; color:var(--grafito);
+  }
+
+  .res-breakdown{ padding:15px 22px; border-top:1px solid var(--arena); }
+  .res-breakdown h4{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.64rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--bruma); margin:0 0 8px;
+  }
+  .tramo{ display:flex; justify-content:space-between; font-size:0.8rem; padding:4px 0; }
+  .tramo .noches{ color:var(--bruma); font-size:0.72rem; }
+
+  .consejos{ padding:0 22px 16px; }
+  .consejo{
+    display:flex; gap:9px; background:var(--lino);
+    border-left:3px solid var(--liquen); padding:10px 12px;
+    border-radius:0 8px 8px 0; margin-bottom:8px; font-size:0.78rem; line-height:1.4;
+  }
+  .consejo.warn{ border-left-color:#c9a24a; }
+  .consejo.alert{ border-left-color:#a15c4a; }
+  .consejo-icon{ font-size:0.95rem; flex-shrink:0; }
+
+  .btn-row{ padding:0 22px 16px; display:flex; gap:10px; }
+  .btn{
+    flex:1; padding:11px; border:none; border-radius:7px;
+    font-family:'Space Grotesk', sans-serif; font-size:0.74rem; font-weight:500;
+    letter-spacing:0.06em; text-transform:uppercase; cursor:pointer;
+  }
+  .btn-primary{ background:var(--grafito); color:var(--hueso); }
+  .btn-primary:hover{ background:var(--pizarra); }
+  .btn-secondary{ background:var(--arena); color:var(--grafito); }
+  .btn-secondary:hover{ background:var(--piedra); }
+  .btn-whatsapp{ background:#4a5d3a; color:var(--hueso); display:flex; align-items:center; justify-content:center; gap:6px; }
+  .btn-whatsapp:hover{ background:#3a4a2e; }
+
+  .empty-state{ padding:40px 24px; text-align:center; color:var(--piedra); }
+  .empty-state .icon{ font-size:2.4rem; margin-bottom:12px; }
+  .empty-state p{ font-size:0.84rem; line-height:1.5; }
+
+  .info-cliente{ border-top:1px solid var(--arena); padding:16px 22px; }
+  .info-cliente h4{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.64rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--bruma); margin:0 0 8px;
+  }
+
+  footer.site-footer{
+    max-width:1180px; margin:0 auto; padding:0 24px 48px; color:var(--bruma); font-size:0.78rem;
+  }
+  footer.site-footer .rule{ border-top:1px solid var(--arena); padding-top:18px; }
+
+  @media (max-width: 900px){
+    main{ grid-template-columns:1fr; }
+    .cabanas-grid{ grid-template-columns:repeat(2, 1fr); }
+    .form-row.three{ grid-template-columns:1fr 1fr; }
+    .resultado{ position:static; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <img src="mapulauquen-logo-hueso.png" alt="Mapulauquen">
+    <div class="hero-text">
+      <h1>Cotizador</h1>
+      <p>Cabañas &amp; Wellness · Villarrica</p>
+    </div>
+  </div>
+</header>
+
+<div class="backwrap">
+  <a class="backlink" href="https://ameliadlmv.github.io/mapulauquen-links/">← Volver al panel de enlaces</a>
+</div>
+
+<main>
+  <!-- COLUMNA IZQUIERDA -->
+  <div>
+    <!-- PASO 1 -->
+    <div class="panel">
+      <div class="panel-title">1 · Tipo de estadía</div>
+      <div class="panel-body">
+        <div class="tipo-tabs">
+          <button class="tipo-tab active" onclick="setTipo('diario')" id="tab-diario" type="button">Por noches</button>
+          <button class="tipo-tab" onclick="setTipo('mensual')" id="tab-mensual" type="button">Mensual</button>
+        </div>
+
+        <div id="bloque-diario">
+          <div class="form-row">
+            <div class="field">
+              <label>Check-in</label>
+              <input type="date" id="fecha-in" onchange="calcular()">
+            </div>
+            <div class="field">
+              <label>Check-out</label>
+              <input type="date" id="fecha-out" onchange="calcular()">
+            </div>
+          </div>
+          <div id="noches-display" style="font-family:'Space Grotesk',sans-serif;font-size:0.8rem;color:var(--bruma);margin-top:-10px;margin-bottom:14px;"></div>
+        </div>
+
+        <div id="bloque-mensual" style="display:none">
+          <div class="form-row">
+            <div class="field">
+              <label>Mes inicio</label>
+              <input type="date" id="fecha-mensual" onchange="calcular()">
+            </div>
+            <div class="field">
+              <label>Cantidad de meses</label>
+              <select id="cant-meses" onchange="calcular()">
+                <option value="1">1 mes</option>
+                <option value="2">2 meses</option>
+                <option value="3">3 meses</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row three">
+          <div class="field">
+            <label>Adultos</label>
+            <input type="number" id="adultos" value="2" min="1" max="10" onchange="calcular()">
+          </div>
+          <div class="field">
+            <label>Niños</label>
+            <input type="number" id="ninos" value="0" min="0" max="6" onchange="calcular()">
+          </div>
+          <div class="field">
+            <label>Mascotas</label>
+            <select id="mascotas" onchange="calcular()">
+              <option value="0">No</option>
+              <option value="1">Sí</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div class="panel">
+      <div class="panel-title">2 · Seleccionar cabaña</div>
+      <div class="panel-body">
+        <div class="cabanas-grid" id="cabanas-grid"></div>
+        <div id="cabana-info" style="display:none" class="precio-rango">
+          <h4>Rango de precios — <span id="cabana-info-nombre"></span></h4>
+          <div class="rango-row">
+            <span class="rango-min">Mín: <strong id="rango-min"></strong></span>
+            <span style="color:var(--bruma)">Temporada actual: <strong id="temp-actual"></strong></span>
+            <span class="rango-max">Máx: <strong id="rango-max"></strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div class="panel">
+      <div class="panel-title">3 · Cliente y ajustes</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <div class="field">
+            <label>Nombre cliente</label>
+            <input type="text" id="nombre-cliente" placeholder="Nombre para la cotización" oninput="calcular()">
+          </div>
+          <div class="field">
+            <label>Tipo cliente</label>
+            <select id="tipo-cliente" onchange="calcular()">
+              <option value="normal">Particular</option>
+              <option value="corporativo">Corporativo / Empresa</option>
+              <option value="agencia">Agencia de viajes</option>
+              <option value="tercera-edad">Tercera Edad (Sernatur)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Descuento manual (%)</label>
+            <input type="number" id="descuento" value="0" min="0" max="30" step="1" onchange="calcular()">
+          </div>
+          <div class="field">
+            <label>Servicios adicionales</label>
+            <select id="servicios" onchange="calcular()" multiple>
+              <option value="0">Ninguno</option>
+              <option value="15000">Desayuno incluido (+$15.000/noche)</option>
+              <option value="25000">Media pensión (+$25.000/noche)</option>
+              <option value="20000">Late check-out (+$20.000)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLUMNA DERECHA -->
+  <div class="resultado">
+    <div class="panel">
+      <div id="result-container">
+        <div class="empty-state">
+          <div class="icon">🏔️</div>
+          <p>Selecciona una cabaña y las fechas para ver el desglose de precios.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="rule">Mapulauquen · Cotizador interno</div>
+</footer>
+
+<script src="precios.js"></script>
+<script>
+const CABANAS = window.MP_CONFIG.cabanas;
+const PRECIOS = window.MP_CONFIG.precios;
+
+// ─── TEMPORADAS ─────────────────────────────────────────────
+function getTemporada(fecha) {
+  if (!fecha) return 'B';
+  const m = fecha.getMonth() + 1;
+  const d = fecha.getDate();
+  if ((m === 12 && d >= 15) || m === 1 || m === 2 || (m === 3 && d <= 15)) return 'A';
+  if (m === 7 || (m === 9 && d >= 17 && d <= 20)) return 'A';
+  if ([4,5,10,11].includes(m) || (m === 3 && d >= 16) || (m === 12 && d < 15)) return 'M';
+  return 'B';
+}
+function tempLabel(t) { return { 'B':'Baja', 'M':'Media', 'A':'Alta' }[t]; }
+
+function getPrecioNoche(cabId, noches, temp) {
+  const p = PRECIOS[cabId];
+  if (!p) return null;
+  const tk = temp === 'A' ? 'A' : temp === 'M' ? 'M' : 'B';
+  const base = Math.round((p.d1[tk].mn + p.d1[tk].mx) / 2);
+  let descDuracion = 0;
+  if (noches >= 30 && p.d30) {
+    const nocheD30 = Math.round(((p.d30[tk].mn + p.d30[tk].mx) / 2) / 30);
+    descDuracion = Math.max(0, Math.round((1 - nocheD30 / base) * 100));
+  } else if (noches >= 7 && p.d7) {
+    const nocheD7 = Math.round(((p.d7[tk].mn + p.d7[tk].mx) / 2) / 7);
+    descDuracion = Math.max(0, Math.round((1 - nocheD7 / base) * 100));
+  }
+  return { precioNoche: base, descDuracion };
+}
+
+// ─── ESTADO ─────────────────────────────────────────────────
+let cabanaSeleccionada = null;
+let tipoTarifa = 'diario';
+
+// ─── RENDER CABAÑAS ─────────────────────────────────────────
+function renderCabanas() {
+  const adultos = parseInt(document.getElementById('adultos').value) || 2;
+  const ninos = parseInt(document.getElementById('ninos').value) || 0;
+  const total = adultos + ninos;
+
+  const grid = document.getElementById('cabanas-grid');
+  grid.innerHTML = '';
+
+  CABANAS.forEach(c => {
+    const compatible = total <= c.ocup;
+    const div = document.createElement('div');
+    div.className = 'cabana-card' + (c.id === cabanaSeleccionada ? ' selected' : '') + (!compatible ? ' disabled' : '');
+    div.innerHTML = `
+      <span class="cab-icon">${c.icon}</span>
+      <span class="cab-name">${c.nombre}</span>
+      <span class="cab-detail">${c.dorms} dorm · ${c.banos} baño${c.banos>1?'s':''} · hasta ${c.ocup} pax</span>
+      ${c.grupo === 'XL' ? '<span class="cab-badge">PREMIUM</span>' : ''}
+    `;
+    if (compatible) {
+      div.onclick = () => { cabanaSeleccionada = c.id; renderCabanas(); calcular(); };
+    }
+    grid.appendChild(div);
+  });
+
+  const cab = CABANAS.find(c => c.id === cabanaSeleccionada);
+  if (cab) {
+    const temp = getTemporada(new Date());
+    const p = PRECIOS[cab.id];
+    document.getElementById('cabana-info').style.display = '';
+    document.getElementById('cabana-info-nombre').textContent = cab.nombre;
+    document.getElementById('rango-min').textContent = fmt(p.d1[temp].mn);
+    document.getElementById('rango-max').textContent = fmt(p.d1[temp].mx);
+    document.getElementById('temp-actual').textContent = tempLabel(temp);
+  } else {
+    document.getElementById('cabana-info').style.display = 'none';
+  }
+}
+
+// ─── TIPO TARIFA ────────────────────────────────────────────
+function setTipo(t) {
+  tipoTarifa = t;
+  document.getElementById('tab-diario').classList.toggle('active', t === 'diario');
+  document.getElementById('tab-mensual').classList.toggle('active', t === 'mensual');
+  document.getElementById('bloque-diario').style.display = t === 'diario' ? '' : 'none';
+  document.getElementById('bloque-mensual').style.display = t === 'mensual' ? '' : 'none';
+  calcular();
+}
+
+function fmt(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
+
+// ─── CÁLCULO PRINCIPAL ──────────────────────────────────────
+function calcular() {
+  renderCabanas();
+
+  const cab = CABANAS.find(c => c.id === cabanaSeleccionada);
+  if (!cab) { showEmpty(); return; }
+
+  const tipoCliente = document.getElementById('tipo-cliente').value;
+  const descManual = parseFloat(document.getElementById('descuento').value) || 0;
+  const nombre = document.getElementById('nombre-cliente').value;
+
+  const descAuto = { normal:0, corporativo:10, agencia:15, 'tercera-edad':20 };
+  const descTotal = Math.min(descManual + descAuto[tipoCliente], 30);
+
+  let subtotal = 0, breakdown = [], noches = 0, temp = 'B', consejos = [];
+
+  if (tipoTarifa === 'diario') {
+    const fi = document.getElementById('fecha-in').value;
+    const fo = document.getElementById('fecha-out').value;
+    if (!fi || !fo) { showEmpty('Selecciona las fechas de entrada y salida.'); return; }
+
+    const dateIn = new Date(fi + 'T12:00:00');
+    const dateOut = new Date(fo + 'T12:00:00');
+    noches = Math.round((dateOut - dateIn) / 86400000);
+    if (noches <= 0) { showEmpty('La fecha de salida debe ser posterior a la entrada.'); return; }
+
+    document.getElementById('noches-display').textContent = noches + ' noche' + (noches > 1 ? 's' : '');
+
+    temp = getTemporada(dateIn);
+    const { precioNoche, descDuracion } = getPrecioNoche(cab.id, noches, temp);
+    const precioNocheConDesc = descDuracion > 0 ? Math.round(precioNoche * (1 - descDuracion/100)) : precioNoche;
+    subtotal = precioNocheConDesc * noches;
+
+    breakdown.push({
+      label: `${noches} noche${noches>1?'s':''} · Temp. ${tempLabel(temp)}${descDuracion > 0 ? ' · Desc. estadía ' + descDuracion + '%' : ''}`,
+      noches, precioNoche: precioNocheConDesc, total: subtotal
+    });
+
+    if (noches < 2) consejos.push({ tipo:'warn', icon:'💡', texto:'Estadías de 1 noche tienen mayor costo operacional. Considera aplicar un recargo por estadía corta (15-20%) o establecer mínimo 2 noches.' });
+    if (noches >= 7 && noches < 30 && descDuracion > 0) consejos.push({ tipo:'info', icon:'✅', texto:'Con ' + noches + ' noches se aplicó el descuento por estadía extendida (' + descDuracion + '%).' });
+    if (noches >= 30 && descDuracion > 0) consejos.push({ tipo:'info', icon:'✅', texto:'Estadía de 30+ días: descuento por larga estadía del ' + descDuracion + '% aplicado.' });
+
+  } else {
+    const fm = document.getElementById('fecha-mensual').value;
+    const cantM = parseInt(document.getElementById('cant-meses').value) || 1;
+    if (!fm) { showEmpty('Selecciona el mes de inicio.'); return; }
+
+    const dateM = new Date(fm + 'T12:00:00');
+    temp = getTemporada(dateM);
+    const pm = PRECIOS[cab.id].mensual;
+    const tk = temp === 'A' ? 'A' : temp === 'M' ? 'M' : 'B';
+    const pMes = Math.round((pm[tk].mn + pm[tk].mx) / 2);
+    subtotal = pMes * cantM;
+    noches = cantM * 30;
+
+    for (let i = 0; i < cantM; i++) {
+      const d = new Date(dateM); d.setMonth(d.getMonth() + i);
+      const t2 = getTemporada(d);
+      breakdown.push({ label: `Mes ${i+1} — Temp. ${tempLabel(t2)}`, noches:30, precioNoche: Math.round(pMes/30), total: pMes });
+    }
+
+    if (cantM >= 2) consejos.push({ tipo:'info', icon:'💰', texto:`Para ${cantM} meses, considera ofrecer un descuento de fidelización del 5-8% para cerrar antes que el huésped compare opciones.` });
+  }
+
+  const serviciosSel = Array.from(document.getElementById('servicios').selectedOptions)
+    .map(o => parseInt(o.value)).filter(v => v > 0);
+  const costoServicio = serviciosSel.reduce((a,b) => a+b, 0) * (tipoTarifa === 'diario' ? noches : 1);
+
+  const baseConDesc = subtotal * (1 - descTotal/100);
+  const totalFinal = baseConDesc + costoServicio;
+
+  if (tipoCliente === 'corporativo') consejos.push({ tipo:'info', icon:'🏢', texto:'Clientes corporativos: considera pedir orden de compra o adelanto del 30%. Puedes emitir factura con IVA.' });
+  if (tipoCliente === 'tercera-edad') consejos.push({ tipo:'info', icon:'🌟', texto:'Programa Vacaciones Tercera Edad (Sernatur): verifica vigencia del voucher y condiciones del convenio antes de confirmar.' });
+  if (temp === 'A' && descTotal > 10) consejos.push({ tipo:'warn', icon:'⚠️', texto:'Estás aplicando un descuento alto en temporada alta. Evalúa si es necesario — esta es la ventana de mayor rentabilidad del año.' });
+  if (temp === 'B') consejos.push({ tipo:'info', icon:'💡', texto:'Temporada baja: buen momento para ofrecer paquetes especiales (spa, cenas, trekking) que aumenten el ticket promedio sin bajar más el precio base.' });
+
+  const p = PRECIOS[cab.id];
+  const tk2 = temp === 'A' ? 'A' : temp === 'M' ? 'M' : 'B';
+  const pMin = tipoTarifa === 'mensual' ? p.mensual[tk2].mn : p.d1[tk2].mn;
+  const pNocheCalc = totalFinal / noches;
+  if (pNocheCalc < pMin * 0.95) consejos.push({ tipo:'alert', icon:'🚨', texto:'El precio por noche resultante (' + fmt(pNocheCalc) + ') está por debajo del mínimo de tabla. Revisa los descuentos aplicados.' });
+
+  const tempClass = { 'B':'temp-baja', 'M':'temp-media', 'A':'temp-alta' }[temp];
+
+  let breakdownHTML = breakdown.map(b => `
+    <div class="tramo">
+      <span>${b.label}</span>
+      <span class="noches">${fmt(b.precioNoche)}/noche</span>
+      <span>${fmt(b.total)}</span>
+    </div>
+  `).join('');
+
+  let consejosHTML = consejos.map(c => `
+    <div class="consejo ${c.tipo === 'alert' ? 'alert' : c.tipo === 'warn' ? 'warn' : ''}">
+      <span class="consejo-icon">${c.icon}</span>
+      <span>${c.texto}</span>
+    </div>
+  `).join('');
+
+  var descHtml = '';
+  if (descTotal > 0) {
+    var dcLbl = {corporativo:'Corp.',agencia:'Agencia','tercera-edad':'3ª Edad'};
+    var dcSuf = tipoCliente !== 'normal' ? ' (' + dcLbl[tipoCliente] + ')' : '';
+    descHtml = '<div class="res-line"><span class="label">Descuento ' + descTotal + '%' + dcSuf + '</span>'
+      + '<span class="value" style="color:var(--liquen)">-' + fmt(subtotal * descTotal/100) + '</span></div>';
+  }
+  var svcHtml = costoServicio > 0
+    ? '<div class="res-line"><span class="label">Servicios adicionales</span><span class="value">' + fmt(costoServicio) + '</span></div>'
+    : '';
+  var totLbl = tipoTarifa === 'mensual'
+    ? (noches/30) + ' mes' + (noches > 30 ? 'es' : '')
+    : noches + ' noche' + (noches > 1 ? 's' : '');
+  var consejosWrap = consejosHTML ? '<div class="consejos">' + consejosHTML + '</div>' : '';
+  var clienteHtml = nombre
+    ? '<div class="info-cliente"><h4>Cliente</h4><div style="font-size:0.86rem;color:var(--grafito)">'
+      + nombre + ' &nbsp;·&nbsp; '
+      + {normal:'Particular',corporativo:'Corporativo',agencia:'Agencia de viajes','tercera-edad':'Tercera Edad'}[tipoCliente]
+      + '</div></div>'
+    : '';
+  var banosTxt = cab.banos > 1 ? 's' : '';
+  var svgWa = '<svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor">'
+    + '<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>'
+    + '</svg>';
+
+  document.getElementById('result-container').innerHTML =
+    '<div class="res-header">'
+      + '<h2>' + cab.nombre + ' <span class="temp-indicator ' + tempClass + '">' + tempLabel(temp) + '</span></h2>'
+      + '<div class="res-cabana">' + cab.dorms + ' dormitorios &nbsp;·&nbsp; ' + cab.banos + ' baño' + banosTxt + ' &nbsp;·&nbsp; hasta ' + cab.ocup + ' personas</div>'
+    + '</div>'
+    + '<div class="res-body">'
+      + '<div class="res-line"><span class="label">Subtotal base</span><span class="value">' + fmt(subtotal) + '</span></div>'
+      + descHtml
+      + svcHtml
+      + '<div class="res-line"><span class="label">Precio por noche</span><span class="value">' + fmt(totalFinal/noches) + '</span></div>'
+    + '</div>'
+    + '<div class="res-total">'
+      + '<span class="tot-label">Total ' + totLbl + '</span>'
+      + '<span class="tot-amount">' + fmt(totalFinal) + '</span>'
+    + '</div>'
+    + '<div class="res-breakdown"><h4>Desglose</h4>' + breakdownHTML + '</div>'
+    + consejosWrap
+    + '<div class="btn-row">'
+      + '<button class="btn btn-primary" onclick="generarCotizacion()" type="button">📄 Generar cotización</button>'
+      + '<button class="btn btn-secondary" onclick="copiarResumen()" type="button">📋 Copiar</button>'
+    + '</div>'
+    + '<div class="btn-row" style="padding-top:0">'
+      + '<button class="btn btn-whatsapp" onclick="enviarWhatsApp()" type="button">' + svgWa + ' Consultar disponibilidad</button>'
+    + '</div>'
+    + clienteHtml;
+
+  window.__ultimaCotizacion = { cab, tipoCliente, nombre, descTotal, noches, temp, subtotal, costoServicio, totalFinal, totLbl, tipoTarifa };
+}
+
+function showEmpty(msg) {
+  document.getElementById('result-container').innerHTML = `
+    <div class="empty-state">
+      <div class="icon">🏔️</div>
+      <p>${msg || 'Selecciona una cabaña y las fechas para ver el desglose de precios.'}</p>
+    </div>
+  `;
+  window.__ultimaCotizacion = null;
+}
+
+// ─── NÚMERO DE COTIZACIÓN ───────────────────────────────────
+function getNumeroCotizacion() {
+  let n = parseInt(localStorage.getItem('mp_cot_num') || '0');
+  n++;
+  localStorage.setItem('mp_cot_num', n);
+  return String(n).padStart(4, '0');
+}
+
+// ─── GENERAR DOCUMENTO DE COTIZACIÓN (imprimible) ───────────
+function generarCotizacion() {
+  const st = window.__ultimaCotizacion;
+  if (!st) return;
+  const { cab, tipoCliente, nombre, descTotal, noches, temp, subtotal, costoServicio, totalFinal, totLbl, tipoTarifa } = st;
+
+  const adultos = parseInt(document.getElementById('adultos').value) || 2;
+  const ninos = parseInt(document.getElementById('ninos').value) || 0;
+  const mascotas = document.getElementById('mascotas').value === '1' ? 'Sí' : 'No';
+
+  const descImporte = Math.round(subtotal * descTotal / 100);
+  const afecto = Math.round(totalFinal / 1.19);
+  const iva = totalFinal - afecto;
+
+  const fechaInVal = tipoTarifa === 'diario' ? document.getElementById('fecha-in').value : document.getElementById('fecha-mensual').value;
+  const fechaOutVal = tipoTarifa === 'diario' ? document.getElementById('fecha-out').value : '';
+  const fmtFecha = s => s ? s.split('-').reverse().join('/') : '—';
+  const hoy = new Date().toLocaleDateString('es-CL');
+  const numCot = getNumeroCotizacion();
+
+  const tipoClienteLbl = {normal:'Particular',corporativo:'Corporativo / Empresa',agencia:'Agencia de viajes','tercera-edad':'Tercera Edad (Sernatur)'}[tipoCliente];
+
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<title>Cotización N° ${numCot} · Mapulauquen</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Archivo:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pizarra:#4D4753; --grafito:#2E2A35; --bruma:#83868B; --liquen:#7C8466;
+  --piedra:#B8B3AD; --arena:#E6E1D8; --lino:#F3F1EC; --hueso:#FAF9F6;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Archivo',Arial,sans-serif;font-size:10pt;color:var(--grafito);background:var(--hueso);}
+.page{width:210mm;min-height:297mm;margin:0 auto;padding:14mm 14mm 10mm;}
+
+.hdr{display:flex;align-items:center;gap:14px;border-bottom:2px solid var(--grafito);padding-bottom:12px;margin-bottom:14px;}
+.hdr h1{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:600;letter-spacing:0.04em;}
+.hdr p{font-size:8pt;color:var(--bruma);margin-top:2px;}
+
+.cot-titulo{display:flex;justify-content:space-between;align-items:center;background:var(--grafito);color:var(--hueso);padding:10px 16px;margin-bottom:14px;border-radius:6px;}
+.cot-titulo h2{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;letter-spacing:0.06em;}
+.cot-titulo .num{font-family:'Space Grotesk',sans-serif;font-size:0.95rem;font-weight:700;}
+
+.cliente-box{border:1px solid var(--arena);border-radius:8px;padding:12px 16px;margin-bottom:14px;}
+.cliente-title{font-family:'Space Grotesk',sans-serif;font-size:8pt;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--bruma);margin-bottom:8px;}
+.cliente-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 16px;font-size:9pt;}
+.cliente-grid .field span{font-weight:600;}
+
+table.items{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:9pt;}
+table.items th{background:var(--grafito);color:var(--hueso);padding:7px 9px;text-align:left;font-family:'Space Grotesk',sans-serif;font-size:8pt;font-weight:600;}
+table.items td{border-bottom:1px solid var(--arena);padding:7px 9px;}
+
+.totales{border:1px solid var(--arena);border-radius:8px;overflow:hidden;margin-bottom:14px;max-width:320px;margin-left:auto;}
+.totales table{width:100%;border-collapse:collapse;font-size:9pt;}
+.totales td{padding:6px 14px;border-bottom:1px solid var(--arena);}
+.totales td:last-child{text-align:right;font-weight:600;}
+.totales tr.total-row td{background:var(--arena);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11pt;}
+
+.obs-box{border:1px solid var(--arena);border-radius:8px;padding:12px 16px;margin-bottom:14px;}
+.obs-box h4{font-family:'Space Grotesk',sans-serif;font-size:8pt;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--bruma);margin-bottom:8px;}
+.obs-box ol{padding-left:16px;font-size:8.5pt;line-height:1.7;}
+
+.footer{background:var(--grafito);color:var(--hueso);text-align:center;padding:10px;border-radius:6px;font-size:8.5pt;line-height:1.6;}
+
+@media print{
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .page{padding:8mm 10mm;}
+  .no-print{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="no-print" style="text-align:center;padding:12px;background:#eee;font-family:sans-serif;font-size:13px">
+  <button onclick="window.print()" style="padding:10px 28px;background:#2E2A35;color:#FAF9F6;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">
+    ⬇ Descargar / Imprimir PDF
+  </button>
+  &nbsp;&nbsp;<span style="color:#666">Usa "Guardar como PDF" en el diálogo de impresión</span>
+</div>
+
+<div class="page">
+  <div class="hdr">
+    <img src="mapulauquen-logo-pizarra.png" style="height:44px;width:auto">
+    <div>
+      <h1>MAPULAUQUEN</h1>
+      <p>Cabañas &amp; Wellness · Villarrica, Región de La Araucanía</p>
+    </div>
+  </div>
+
+  <div class="cot-titulo">
+    <h2>COTIZACIÓN</h2>
+    <span class="num">N° ${numCot}</span>
+  </div>
+
+  <div class="cliente-box">
+    <div class="cliente-title">Datos del cliente</div>
+    <div class="cliente-grid">
+      <div class="field">Nombre: <span>${nombre || '—'}</span></div>
+      <div class="field">Tipo: <span>${tipoClienteLbl}</span></div>
+      <div class="field">Fecha cotización: <span>${hoy}</span></div>
+      <div class="field">Adultos: <span>${adultos}</span></div>
+      <div class="field">Niños: <span>${ninos}</span></div>
+      <div class="field">Mascotas: <span>${mascotas}</span></div>
+    </div>
+  </div>
+
+  <table class="items">
+    <tr><th>Cabaña</th><th>Detalle</th><th>Período</th><th>Temporada</th></tr>
+    <tr>
+      <td>${cab.icon} ${cab.nombre}</td>
+      <td>${cab.dorms} dorm · ${cab.banos} baño${cab.banos>1?'s':''} · hasta ${cab.ocup} pax</td>
+      <td>${tipoTarifa === 'diario' ? fmtFecha(fechaInVal) + ' — ' + fmtFecha(fechaOutVal) : fmtFecha(fechaInVal) + ' (' + (noches/30) + ' mes/es)'}</td>
+      <td>${tempLabel(temp)}</td>
+    </tr>
+  </table>
+
+  <div class="totales">
+    <table>
+      <tr><td>Subtotal (${totLbl})</td><td>${fmt(subtotal)}</td></tr>
+      ${descTotal > 0 ? '<tr><td>Descuento ' + descTotal + '%</td><td>-' + fmt(descImporte) + '</td></tr>' : ''}
+      ${costoServicio > 0 ? '<tr><td>Servicios adicionales</td><td>' + fmt(costoServicio) + '</td></tr>' : ''}
+      <tr><td>Monto afecto (neto)</td><td>${fmt(afecto)}</td></tr>
+      <tr><td>IVA (19%)</td><td>${fmt(iva)}</td></tr>
+      <tr class="total-row"><td>TOTAL</td><td>${fmt(totalFinal)}</td></tr>
+    </table>
+  </div>
+
+  <div class="obs-box">
+    <h4>Condiciones</h4>
+    <ol>
+      <li>Cotización válida por 7 días desde la fecha de emisión.</li>
+      <li>Precios sujetos a disponibilidad al momento de confirmar la reserva.</li>
+      <li>Para reservar se requiere abono del 50% del valor total.</li>
+      <li>Check-in 16:00 hrs · Check-out 11:00 hrs, salvo acuerdo previo.</li>
+    </ol>
+  </div>
+
+  <div class="footer">
+    <strong>Mapulauquen</strong> · Cabañas &amp; Wellness · Villarrica<br>
+    Consultas y reservas por WhatsApp o correo oficial
+  </div>
+</div>
+</body></html>`);
+  win.document.close();
+}
+
+// ─── COPIAR RESUMEN ──────────────────────────────────────────
+function copiarResumen() {
+  const st = window.__ultimaCotizacion;
+  if (!st) return;
+  const { cab, nombre, noches, temp, totalFinal, totLbl, tipoTarifa } = st;
+  const fechaInVal = tipoTarifa === 'diario' ? document.getElementById('fecha-in').value : document.getElementById('fecha-mensual').value;
+  const fechaOutVal = tipoTarifa === 'diario' ? document.getElementById('fecha-out').value : '';
+  const fmtFecha = s => s ? s.split('-').reverse().join('/') : '—';
+
+  const texto = `MAPULAUQUEN · Cotización\n`
+    + `Cabaña: ${cab.nombre} (${cab.dorms} dorm, hasta ${cab.ocup} pax)\n`
+    + (tipoTarifa === 'diario'
+        ? `Fechas: ${fmtFecha(fechaInVal)} — ${fmtFecha(fechaOutVal)} (${totLbl})\n`
+        : `Inicio: ${fmtFecha(fechaInVal)} (${totLbl})\n`)
+    + `Temporada: ${tempLabel(temp)}\n`
+    + (nombre ? `Cliente: ${nombre}\n` : '')
+    + `Total: ${fmt(totalFinal)}`;
+
+  navigator.clipboard.writeText(texto).then(() => {
+    alert('Resumen copiado al portapapeles.');
+  }).catch(() => {
+    prompt('Copia el resumen manualmente:', texto);
+  });
+}
+
+// ─── ENVIAR POR WHATSAPP ─────────────────────────────────────
+function enviarWhatsApp() {
+  const st = window.__ultimaCotizacion;
+  if (!st) return;
+  const { cab, nombre, noches, temp, totalFinal, totLbl, tipoTarifa } = st;
+  const fechaInVal = tipoTarifa === 'diario' ? document.getElementById('fecha-in').value : document.getElementById('fecha-mensual').value;
+  const fechaOutVal = tipoTarifa === 'diario' ? document.getElementById('fecha-out').value : '';
+  const fmtFecha = s => s ? s.split('-').reverse().join('/') : '—';
+
+  const texto = `Hola! Quisiera consultar disponibilidad en Mapulauquen.\n`
+    + `Cabaña: ${cab.nombre}\n`
+    + (tipoTarifa === 'diario'
+        ? `Fechas: ${fmtFecha(fechaInVal)} - ${fmtFecha(fechaOutVal)}\n`
+        : `Inicio: ${fmtFecha(fechaInVal)} (${totLbl})\n`)
+    + (nombre ? `Nombre: ${nombre}\n` : '')
+    + `Total estimado: ${fmt(totalFinal)}`;
+
+  window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank');
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+renderCabanas();
+</script>
+
+</body>
+</html>
