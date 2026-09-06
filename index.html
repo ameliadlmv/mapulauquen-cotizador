@@ -18,6 +18,7 @@
     --arena:#E6E1D8;
     --lino:#F3F1EC;
     --hueso:#FAF9F6;
+    --admin:#a15c4a;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -48,6 +49,7 @@
     width:auto;
     display:block;
   }
+  .hero-text{ flex:1; min-width:180px; }
   .hero-text h1{
     font-family:'Space Grotesk', sans-serif;
     font-weight:600;
@@ -61,6 +63,21 @@
     font-size:0.88rem;
     letter-spacing:0.02em;
   }
+  .btn-admin-toggle{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.25);
+    color:var(--hueso);
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.72rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:9px 14px;
+    border-radius:7px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn-admin-toggle:hover{ background:rgba(255,255,255,0.16); }
+  .btn-admin-toggle.on{ background:var(--admin); border-color:var(--admin); }
 
   .backwrap{
     max-width:1180px;
@@ -105,6 +122,15 @@
     font-size:0.85rem;
     letter-spacing:0.04em;
     padding:13px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .panel-title .count-badge{
+    background:var(--liquen); color:var(--hueso);
+    font-size:0.66rem; padding:2px 8px; border-radius:10px;
+    font-weight:500; letter-spacing:0.02em; text-transform:none;
   }
   .panel-body{ padding:20px; }
 
@@ -141,7 +167,6 @@
     background:var(--lino);
     appearance:none;
   }
-  .field select[multiple]{ height:66px; padding:6px; }
   .field select:focus,
   .field input:focus{
     outline:none;
@@ -171,11 +196,17 @@
   }
   .tipo-tab.active{ background:var(--grafito); color:var(--hueso); }
 
+  .temp-inline{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Space Grotesk', sans-serif; font-size:0.74rem;
+    color:var(--bruma); margin-top:-8px; margin-bottom:14px;
+  }
+
   .cabanas-grid{
     display:grid;
     grid-template-columns:repeat(3, 1fr);
     gap:10px;
-    margin-bottom:18px;
+    margin-bottom:8px;
   }
   .cabana-card{
     border:1.5px solid var(--arena);
@@ -191,18 +222,59 @@
     background:var(--grafito);
     color:var(--hueso);
   }
-  .cabana-card.selected .cab-detail{ color:var(--piedra); }
-  .cabana-card.disabled{ opacity:0.4; cursor:not-allowed; }
-  .cab-icon{ font-size:1.25rem; margin-bottom:4px; display:block; }
-  .cab-name{ font-family:'Space Grotesk', sans-serif; font-size:0.92rem; font-weight:600; display:block; }
-  .cab-detail{ font-size:0.68rem; color:var(--bruma); letter-spacing:0.02em; }
-  .cab-badge{
-    position:absolute; top:6px; right:6px;
-    font-size:0.6rem; background:var(--liquen); color:var(--hueso);
-    padding:1px 6px; border-radius:10px; font-weight:500;
-    font-family:'Space Grotesk', sans-serif;
+  .cabana-card.selected .cab-detail,
+  .cabana-card.selected .cab-price{ color:var(--piedra); }
+  .cab-check{
+    position:absolute; top:8px; right:8px;
+    width:16px; height:16px; border-radius:4px;
+    border:1.5px solid var(--piedra); background:var(--hueso);
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.62rem; color:var(--hueso);
   }
-  .cabana-card.selected .cab-badge{ background:var(--piedra); color:var(--grafito); }
+  .cabana-card.selected .cab-check{ background:var(--liquen); border-color:var(--liquen); }
+  .cab-icon{ font-size:1.25rem; margin-bottom:4px; display:block; }
+  .cab-name{ font-family:'Space Grotesk', sans-serif; font-size:0.92rem; font-weight:600; display:block; padding-right:18px; }
+  .cab-detail{ font-size:0.68rem; color:var(--bruma); letter-spacing:0.02em; display:block; margin:3px 0; }
+  .cab-price{ font-family:'Space Grotesk', sans-serif; font-size:0.78rem; font-weight:600; color:var(--liquen); }
+  .cab-price .admin-edit-hint{ font-weight:400; color:var(--admin); font-size:0.62rem; text-transform:uppercase; letter-spacing:0.04em; }
+
+  .catalog-cat{ margin-bottom:14px; }
+  .catalog-cat:last-child{ margin-bottom:0; }
+  .catalog-cat-title{
+    font-family:'Space Grotesk', sans-serif; font-size:0.72rem; font-weight:600;
+    letter-spacing:0.06em; text-transform:uppercase; color:var(--grafito);
+    padding:6px 0; border-bottom:1px solid var(--arena); margin-bottom:8px;
+    display:flex; justify-content:space-between; align-items:baseline; gap:8px;
+  }
+  .catalog-cat-nota{ font-size:0.66rem; color:var(--bruma); font-weight:400; text-transform:none; letter-spacing:0; }
+  .catalog-item{
+    display:flex; align-items:center; gap:10px;
+    padding:7px 0;
+  }
+  .catalog-item-info{ flex:1; min-width:0; }
+  .catalog-item-nombre{ font-size:0.84rem; color:var(--grafito); }
+  .catalog-item-detalle{ font-size:0.7rem; color:var(--bruma); margin-top:1px; }
+  .catalog-item-precio{
+    font-family:'Space Grotesk', sans-serif; font-size:0.78rem; font-weight:600;
+    color:var(--liquen); white-space:nowrap; min-width:78px; text-align:right;
+  }
+  .catalog-item-precio input{
+    width:88px; padding:5px 6px; border:1.5px solid var(--admin); border-radius:5px;
+    font-family:'Space Grotesk', sans-serif; font-size:0.78rem; font-weight:600;
+    color:var(--admin); background:#fdf3f0; text-align:right;
+  }
+  .qty-stepper{
+    display:flex; align-items:center; gap:6px; flex-shrink:0;
+  }
+  .qty-stepper button{
+    width:24px; height:24px; border-radius:6px; border:1px solid var(--piedra);
+    background:var(--lino); color:var(--grafito); font-size:0.9rem; line-height:1; cursor:pointer;
+  }
+  .qty-stepper button:hover{ background:var(--arena); }
+  .qty-stepper input{
+    width:34px; text-align:center; border:none; background:transparent;
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.84rem; color:var(--grafito);
+  }
 
   .precio-rango{
     background:var(--lino);
@@ -215,9 +287,6 @@
     font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase;
     color:var(--bruma); margin:0 0 8px;
   }
-  .rango-row{ display:flex; justify-content:space-between; font-size:0.82rem; flex-wrap:wrap; gap:6px; }
-  .rango-min{ color:var(--liquen); }
-  .rango-max{ color:#a15c4a; }
 
   /* RESULTADO */
   .resultado{ position:sticky; top:20px; }
@@ -243,13 +312,18 @@
   .temp-alta{ background:#a15c4a; color:var(--hueso); }
 
   .res-body{ padding:18px 22px; }
+  .res-group-title{
+    font-family:'Space Grotesk', sans-serif; font-size:0.64rem; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--bruma); margin:12px 0 4px;
+  }
+  .res-group-title:first-child{ margin-top:0; }
   .res-line{
     display:flex; justify-content:space-between; align-items:baseline;
-    padding:7px 0; border-bottom:1px dotted var(--arena); font-size:0.86rem;
+    padding:5px 0; border-bottom:1px dotted var(--arena); font-size:0.84rem; gap:10px;
   }
   .res-line:last-child{ border-bottom:none; }
   .res-line .label{ color:var(--bruma); }
-  .res-line .value{ font-weight:500; }
+  .res-line .value{ font-weight:500; white-space:nowrap; }
 
   .res-total{
     background:var(--arena);
@@ -269,8 +343,8 @@
     font-family:'Space Grotesk', sans-serif;
     font-size:0.64rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--bruma); margin:0 0 8px;
   }
-  .tramo{ display:flex; justify-content:space-between; font-size:0.8rem; padding:4px 0; }
-  .tramo .noches{ color:var(--bruma); font-size:0.72rem; }
+  .tramo{ display:flex; justify-content:space-between; font-size:0.8rem; padding:4px 0; gap:8px; }
+  .tramo .noches{ color:var(--bruma); font-size:0.72rem; white-space:nowrap; }
 
   .consejos{ padding:0 22px 16px; }
   .consejo{
@@ -305,16 +379,89 @@
     font-size:0.64rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--bruma); margin:0 0 8px;
   }
 
+  .checkbox-row{ display:flex; align-items:center; gap:8px; font-size:0.84rem; margin-bottom:14px; }
+  .checkbox-row input{ width:16px; height:16px; }
+
   footer.site-footer{
     max-width:1180px; margin:0 auto; padding:0 24px 48px; color:var(--bruma); font-size:0.78rem;
   }
   footer.site-footer .rule{ border-top:1px solid var(--arena); padding-top:18px; }
+
+  /* ─── ADMIN OVERLAY ─────────────────────────────────────────── */
+  .admin-overlay{
+    position:fixed; inset:0; background:rgba(46,42,53,0.72);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px; z-index:100;
+  }
+  .admin-modal{
+    background:var(--hueso); border-radius:14px; max-width:760px; width:100%;
+    max-height:88vh; display:flex; flex-direction:column; overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35);
+  }
+  .admin-modal-head{
+    background:var(--admin); color:var(--hueso); padding:16px 22px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .admin-modal-head h3{ font-family:'Space Grotesk', sans-serif; font-size:1rem; font-weight:600; margin:0; }
+  .admin-modal-head button{
+    background:rgba(255,255,255,0.15); border:none; color:var(--hueso);
+    width:28px; height:28px; border-radius:6px; cursor:pointer; font-size:1rem;
+  }
+  .admin-tabs{
+    display:flex; border-bottom:1px solid var(--arena); background:var(--lino); flex-shrink:0;
+    overflow-x:auto;
+  }
+  .admin-tab{
+    padding:11px 16px; font-family:'Space Grotesk', sans-serif; font-size:0.74rem;
+    letter-spacing:0.04em; text-transform:uppercase; cursor:pointer; border:none;
+    background:transparent; color:var(--bruma); white-space:nowrap; border-bottom:2px solid transparent;
+  }
+  .admin-tab.active{ color:var(--grafito); border-bottom-color:var(--admin); font-weight:600; }
+  .admin-body{ padding:18px 22px; overflow-y:auto; flex:1; }
+  .admin-note{ font-size:0.76rem; color:var(--bruma); margin:0 0 14px; line-height:1.5; }
+  table.admin-table{ width:100%; border-collapse:collapse; font-size:0.82rem; }
+  table.admin-table th{
+    text-align:left; font-family:'Space Grotesk', sans-serif; font-size:0.62rem;
+    letter-spacing:0.06em; text-transform:uppercase; color:var(--bruma);
+    padding:6px 8px; border-bottom:1px solid var(--arena);
+  }
+  table.admin-table td{ padding:6px 8px; border-bottom:1px dotted var(--arena); vertical-align:middle; }
+  table.admin-table input[type="number"]{
+    width:92px; padding:6px 7px; border:1px solid var(--piedra); border-radius:5px;
+    font-family:'Archivo', sans-serif; font-size:0.82rem; text-align:right;
+  }
+  table.admin-table input[type="text"]{
+    width:100%; padding:6px 7px; border:1px solid var(--piedra); border-radius:5px;
+    font-family:'Archivo', sans-serif; font-size:0.82rem;
+  }
+  .admin-cat-label{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.72rem; color:var(--grafito); padding-top:14px; display:block; }
+  .admin-mini-btn{
+    background:var(--arena); border:none; border-radius:5px; padding:4px 8px;
+    font-size:0.68rem; cursor:pointer; color:var(--grafito); white-space:nowrap;
+  }
+  .admin-mini-btn:hover{ background:var(--piedra); }
+  .admin-modal-foot{
+    padding:14px 22px; border-top:1px solid var(--arena); background:var(--lino);
+    display:flex; gap:8px; flex-wrap:wrap; flex-shrink:0;
+  }
+  .admin-modal-foot .btn{ flex:none; padding:9px 14px; font-size:0.68rem; }
+  .btn-danger{ background:#fdf3f0; color:var(--admin); border:1px solid var(--admin); }
+  .btn-danger:hover{ background:var(--admin); color:var(--hueso); }
+  .season-pill{
+    display:inline-block; font-family:'Space Grotesk', sans-serif; font-size:0.6rem;
+    padding:2px 7px; border-radius:8px; font-weight:600; letter-spacing:0.04em;
+  }
+  .season-pill.A{ background:#a15c4a; color:#fff; }
+  .season-pill.M{ background:#c9a24a; color:#fff; }
+
+  [hidden]{ display:none !important; }
 
   @media (max-width: 900px){
     main{ grid-template-columns:1fr; }
     .cabanas-grid{ grid-template-columns:repeat(2, 1fr); }
     .form-row.three{ grid-template-columns:1fr 1fr; }
     .resultado{ position:static; }
+    .hero-inner{ flex-wrap:wrap; }
   }
 </style>
 </head>
@@ -327,6 +474,7 @@
       <h1>Cotizador</h1>
       <p>Cabañas &amp; Wellness · Villarrica</p>
     </div>
+    <button class="btn-admin-toggle" id="btn-admin" onclick="toggleAdmin()" type="button">🔒 Admin</button>
   </div>
 </header>
 
@@ -357,7 +505,6 @@
               <input type="date" id="fecha-out" onchange="calcular()">
             </div>
           </div>
-          <div id="noches-display" style="font-family:'Space Grotesk',sans-serif;font-size:0.8rem;color:var(--bruma);margin-top:-10px;margin-bottom:14px;"></div>
         </div>
 
         <div id="bloque-mensual" style="display:none">
@@ -377,14 +524,16 @@
           </div>
         </div>
 
+        <div id="noches-display" class="temp-inline"></div>
+
         <div class="form-row three">
           <div class="field">
             <label>Adultos</label>
-            <input type="number" id="adultos" value="2" min="1" max="10" onchange="calcular()">
+            <input type="number" id="adultos" value="2" min="1" max="30" onchange="calcular()">
           </div>
           <div class="field">
             <label>Niños</label>
-            <input type="number" id="ninos" value="0" min="0" max="6" onchange="calcular()">
+            <input type="number" id="ninos" value="0" min="0" max="20" onchange="calcular()">
           </div>
           <div class="field">
             <label>Mascotas</label>
@@ -399,23 +548,28 @@
 
     <!-- PASO 2 -->
     <div class="panel">
-      <div class="panel-title">2 · Seleccionar cabaña</div>
+      <div class="panel-title">2 · Cabañas <span class="count-badge" id="cabanas-count">0 seleccionadas</span></div>
       <div class="panel-body">
+        <p class="catalog-cat-nota" style="margin:-6px 0 12px">Puedes seleccionar más de una cabaña — se cotizan todas para el mismo período.</p>
         <div class="cabanas-grid" id="cabanas-grid"></div>
-        <div id="cabana-info" style="display:none" class="precio-rango">
-          <h4>Rango de precios — <span id="cabana-info-nombre"></span></h4>
-          <div class="rango-row">
-            <span class="rango-min">Mín: <strong id="rango-min"></strong></span>
-            <span style="color:var(--bruma)">Temporada actual: <strong id="temp-actual"></strong></span>
-            <span class="rango-max">Máx: <strong id="rango-max"></strong></span>
-          </div>
-        </div>
       </div>
     </div>
 
     <!-- PASO 3 -->
     <div class="panel">
-      <div class="panel-title">3 · Cliente y ajustes</div>
+      <div class="panel-title">3 · Servicios de comida <span class="count-badge" id="comida-count">0</span></div>
+      <div class="panel-body" id="comida-body"></div>
+    </div>
+
+    <!-- PASO 4 -->
+    <div class="panel">
+      <div class="panel-title">4 · Servicios de spa <span class="count-badge" id="spa-count">0</span></div>
+      <div class="panel-body" id="spa-body"></div>
+    </div>
+
+    <!-- PASO 5 -->
+    <div class="panel">
+      <div class="panel-title">5 · Cliente y ajustes</div>
       <div class="panel-body">
         <div class="form-row">
           <div class="field">
@@ -434,17 +588,15 @@
         </div>
         <div class="form-row">
           <div class="field">
-            <label>Descuento manual (%)</label>
+            <label>Descuento manual sobre cabañas (%)</label>
             <input type="number" id="descuento" value="0" min="0" max="30" step="1" onchange="calcular()">
           </div>
           <div class="field">
-            <label>Servicios adicionales</label>
-            <select id="servicios" onchange="calcular()" multiple>
-              <option value="0">Ninguno</option>
-              <option value="15000">Desayuno incluido (+$15.000/noche)</option>
-              <option value="25000">Media pensión (+$25.000/noche)</option>
-              <option value="20000">Late check-out (+$20.000)</option>
-            </select>
+            <label>&nbsp;</label>
+            <div class="checkbox-row" style="margin-bottom:0;margin-top:9px">
+              <input type="checkbox" id="late-checkout" onchange="calcular()">
+              <label for="late-checkout" style="font-family:'Archivo';font-size:0.84rem;text-transform:none;letter-spacing:0;color:var(--grafito)">Late check-out (+$20.000)</label>
+            </div>
           </div>
         </div>
       </div>
@@ -457,7 +609,7 @@
       <div id="result-container">
         <div class="empty-state">
           <div class="icon">🏔️</div>
-          <p>Selecciona una cabaña y las fechas para ver el desglose de precios.</p>
+          <p>Selecciona una o más cabañas y las fechas para ver el desglose de precios.</p>
         </div>
       </div>
     </div>
@@ -468,80 +620,229 @@
   <div class="rule">Mapulauquen · Cotizador interno</div>
 </footer>
 
+<!-- ─── MODAL ADMIN (oculto por defecto) ─────────────────────── -->
+<div class="admin-overlay" id="admin-overlay" hidden onclick="if(event.target===this) toggleAdmin()">
+  <div class="admin-modal">
+    <div class="admin-modal-head">
+      <h3>🔓 Modo Admin · Editar precios</h3>
+      <button onclick="toggleAdmin()" type="button" title="Cerrar">✕</button>
+    </div>
+    <div class="admin-tabs" id="admin-tabs"></div>
+    <div class="admin-body" id="admin-body"></div>
+    <div class="admin-modal-foot">
+      <button class="btn btn-danger" onclick="resetOverrides()" type="button">Restablecer todos los precios</button>
+      <button class="btn btn-secondary" onclick="exportPreciosJs()" type="button">⬇ Descargar precios.js actualizado</button>
+      <button class="btn btn-primary" onclick="toggleAdmin()" type="button" style="flex:none">Listo</button>
+    </div>
+  </div>
+</div>
+
 <script src="precios.js"></script>
 <script>
-const CABANAS = window.MP_CONFIG.cabanas;
-const PRECIOS = window.MP_CONFIG.precios;
+const CONFIG = window.MP_CONFIG;
+const CABANAS = CONFIG.cabanas;
+const PRECIOS = CONFIG.precios;
+const COMIDA = CONFIG.comida;
+const SPA = CONFIG.spa;
+
+// ─── OVERRIDES (Modo Admin) ─────────────────────────────────
+function loadOverrides() {
+  try {
+    const raw = localStorage.getItem('mp_admin_overrides');
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) { return {}; }
+}
+let OV = loadOverrides();
+function saveOverrides() {
+  try { localStorage.setItem('mp_admin_overrides', JSON.stringify(OV)); } catch (e) {}
+}
+
+function getTemporadaReglas() {
+  return (OV.temporadas && OV.temporadas.length) ? OV.temporadas : CONFIG.temporadas.reglas;
+}
+
+function getCabinPrecioBase(cabId, temp) {
+  const p = PRECIOS[cabId];
+  const original = Math.round((p.d1[temp].mn + p.d1[temp].mx) / 2);
+  const ov = OV.cabanas && OV.cabanas[cabId] && OV.cabanas[cabId][temp];
+  return { valor: (ov !== undefined && ov !== null) ? ov : original, esOverride: ov !== undefined && ov !== null, original };
+}
+function setCabinOverride(cabId, temp, valor) {
+  if (!OV.cabanas) OV.cabanas = {};
+  if (!OV.cabanas[cabId]) OV.cabanas[cabId] = {};
+  if (valor === '' || valor === null || isNaN(valor)) { delete OV.cabanas[cabId][temp]; }
+  else { OV.cabanas[cabId][temp] = Math.round(Number(valor)); }
+  saveOverrides();
+}
+
+function getItemPrecio(catalogo, tipo, itemId, defaultPrecio) {
+  const ov = OV[tipo] && OV[tipo][itemId];
+  return (ov !== undefined && ov !== null) ? ov : defaultPrecio;
+}
+function setItemOverride(tipo, itemId, valor) {
+  if (!OV[tipo]) OV[tipo] = {};
+  if (valor === '' || valor === null || isNaN(valor)) { delete OV[tipo][itemId]; }
+  else { OV[tipo][itemId] = Math.round(Number(valor)); }
+  saveOverrides();
+}
+
+function resetOverrides() {
+  if (!confirm('¿Restablecer todos los precios (cabañas, comida, spa y temporadas) a los valores originales del archivo? Esta acción no se puede deshacer.')) return;
+  OV = {};
+  saveOverrides();
+  renderAdminModal();
+  renderCabanas();
+  renderComida();
+  renderSpa();
+  calcular();
+}
 
 // ─── TEMPORADAS ─────────────────────────────────────────────
+function enRango(fecha, desde, hasta) {
+  const m = fecha.getMonth() + 1, d = fecha.getDate();
+  const val = m * 100 + d;
+  const dv = desde.mes * 100 + desde.dia;
+  const hv = hasta.mes * 100 + hasta.dia;
+  if (dv <= hv) return val >= dv && val <= hv;
+  return val >= dv || val <= hv;
+}
 function getTemporada(fecha) {
   if (!fecha) return 'B';
-  const m = fecha.getMonth() + 1;
-  const d = fecha.getDate();
-  if ((m === 12 && d >= 15) || m === 1 || m === 2 || (m === 3 && d <= 15)) return 'A';
-  if (m === 7 || (m === 9 && d >= 17 && d <= 20)) return 'A';
-  if ([4,5,10,11].includes(m) || (m === 3 && d >= 16) || (m === 12 && d < 15)) return 'M';
-  return 'B';
+  let tipo = 'B';
+  const reglas = getTemporadaReglas();
+  for (const r of reglas) {
+    if (enRango(fecha, r.desde, r.hasta)) {
+      if (r.tipo === 'A') return 'A';
+      if (r.tipo === 'M') tipo = 'M';
+    }
+  }
+  return tipo;
 }
-function tempLabel(t) { return { 'B':'Baja', 'M':'Media', 'A':'Alta' }[t]; }
+function tempLabel(t) { return { 'B': 'Baja', 'M': 'Media', 'A': 'Alta' }[t]; }
 
 function getPrecioNoche(cabId, noches, temp) {
   const p = PRECIOS[cabId];
-  if (!p) return null;
-  const tk = temp === 'A' ? 'A' : temp === 'M' ? 'M' : 'B';
-  const base = Math.round((p.d1[tk].mn + p.d1[tk].mx) / 2);
+  const { valor: base } = getCabinPrecioBase(cabId, temp);
+  const baseOriginal = Math.round((p.d1[temp].mn + p.d1[temp].mx) / 2);
   let descDuracion = 0;
   if (noches >= 30 && p.d30) {
-    const nocheD30 = Math.round(((p.d30[tk].mn + p.d30[tk].mx) / 2) / 30);
-    descDuracion = Math.max(0, Math.round((1 - nocheD30 / base) * 100));
+    const nocheD30 = Math.round(((p.d30[temp].mn + p.d30[temp].mx) / 2) / 30);
+    descDuracion = Math.max(0, Math.round((1 - nocheD30 / baseOriginal) * 100));
   } else if (noches >= 7 && p.d7) {
-    const nocheD7 = Math.round(((p.d7[tk].mn + p.d7[tk].mx) / 2) / 7);
-    descDuracion = Math.max(0, Math.round((1 - nocheD7 / base) * 100));
+    const nocheD7 = Math.round(((p.d7[temp].mn + p.d7[temp].mx) / 2) / 7);
+    descDuracion = Math.max(0, Math.round((1 - nocheD7 / baseOriginal) * 100));
   }
   return { precioNoche: base, descDuracion };
 }
 
+function fmt(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
+
 // ─── ESTADO ─────────────────────────────────────────────────
-let cabanaSeleccionada = null;
+let cabanasSeleccionadas = new Set();
 let tipoTarifa = 'diario';
+let comidaQty = {};   // { itemId: qty }
+let spaQty = {};      // { itemId: qty }
+let adminMode = false;
+let adminTab = 'cabanas';
 
 // ─── RENDER CABAÑAS ─────────────────────────────────────────
-function renderCabanas() {
-  const adultos = parseInt(document.getElementById('adultos').value) || 2;
-  const ninos = parseInt(document.getElementById('ninos').value) || 0;
-  const total = adultos + ninos;
+function fechaReferencia() {
+  if (tipoTarifa === 'mensual') {
+    const fm = document.getElementById('fecha-mensual').value;
+    return fm ? new Date(fm + 'T12:00:00') : new Date();
+  }
+  const fi = document.getElementById('fecha-in').value;
+  return fi ? new Date(fi + 'T12:00:00') : new Date();
+}
 
+function renderCabanas() {
   const grid = document.getElementById('cabanas-grid');
   grid.innerHTML = '';
+  const temp = getTemporada(fechaReferencia());
 
   CABANAS.forEach(c => {
-    const compatible = total <= c.ocup;
+    const { valor: precio, esOverride } = getCabinPrecioBase(c.id, temp);
     const div = document.createElement('div');
-    div.className = 'cabana-card' + (c.id === cabanaSeleccionada ? ' selected' : '') + (!compatible ? ' disabled' : '');
+    div.className = 'cabana-card' + (cabanasSeleccionadas.has(c.id) ? ' selected' : '');
     div.innerHTML = `
+      <span class="cab-check">${cabanasSeleccionadas.has(c.id) ? '✓' : ''}</span>
       <span class="cab-icon">${c.icon}</span>
       <span class="cab-name">${c.nombre}</span>
-      <span class="cab-detail">${c.dorms} dorm · ${c.banos} baño${c.banos>1?'s':''} · hasta ${c.ocup} pax</span>
-      ${c.grupo === 'XL' ? '<span class="cab-badge">PREMIUM</span>' : ''}
+      <span class="cab-detail">${c.dorms} dorm · ${c.banos} baño${c.banos > 1 ? 's' : ''} · hasta ${c.ocup} pax</span>
+      <span class="cab-price">${fmt(precio)}/noche ${esOverride ? '<span class="admin-edit-hint">· editado</span>' : ''}</span>
     `;
-    if (compatible) {
-      div.onclick = () => { cabanaSeleccionada = c.id; renderCabanas(); calcular(); };
-    }
+    div.onclick = () => {
+      if (cabanasSeleccionadas.has(c.id)) cabanasSeleccionadas.delete(c.id);
+      else cabanasSeleccionadas.add(c.id);
+      renderCabanas();
+      calcular();
+    };
     grid.appendChild(div);
   });
+  document.getElementById('cabanas-count').textContent = cabanasSeleccionadas.size + ' seleccionada' + (cabanasSeleccionadas.size === 1 ? '' : 's');
+}
 
-  const cab = CABANAS.find(c => c.id === cabanaSeleccionada);
-  if (cab) {
-    const temp = getTemporada(new Date());
-    const p = PRECIOS[cab.id];
-    document.getElementById('cabana-info').style.display = '';
-    document.getElementById('cabana-info-nombre').textContent = cab.nombre;
-    document.getElementById('rango-min').textContent = fmt(p.d1[temp].mn);
-    document.getElementById('rango-max').textContent = fmt(p.d1[temp].mx);
-    document.getElementById('temp-actual').textContent = tempLabel(temp);
-  } else {
-    document.getElementById('cabana-info').style.display = 'none';
-  }
+// ─── RENDER CATÁLOGOS (comida / spa) ─────────────────────────
+function qtyStepper(tipo, itemId, qty) {
+  return `
+    <div class="qty-stepper">
+      <button type="button" onclick="cambiarQty('${tipo}','${itemId}',-1)">−</button>
+      <input type="number" min="0" value="${qty}" onchange="setQty('${tipo}','${itemId}',this.value)">
+      <button type="button" onclick="cambiarQty('${tipo}','${itemId}',1)">+</button>
+    </div>
+  `;
+}
+
+function renderCatalogo(tipo, catalogo, containerId, qtyState) {
+  const cont = document.getElementById(containerId);
+  cont.innerHTML = catalogo.categorias.map(cat => {
+    const itemsHtml = cat.items.map(it => {
+      const precio = getItemPrecio(catalogo, tipo, it.id, it.precio);
+      const qty = qtyState[it.id] || 0;
+      const precioHtml = adminMode
+        ? `<input type="number" min="0" step="1" value="${precio}" onchange="setItemOverride('${tipo}','${it.id}',this.value); renderCatalogo('${tipo}', ${tipo === 'comida' ? 'COMIDA' : 'SPA'}, '${containerId}', ${tipo === 'comida' ? 'comidaQty' : 'spaQty'}); calcular();">`
+        : fmt(precio) + (cat.unidad === 'pp' || it.unidad === 'pp' ? ' pp' : '');
+      return `
+        <div class="catalog-item">
+          <div class="catalog-item-info">
+            <div class="catalog-item-nombre">${it.nombre}</div>
+            ${it.detalle ? `<div class="catalog-item-detalle">${it.detalle}</div>` : ''}
+          </div>
+          <div class="catalog-item-precio">${precioHtml}</div>
+          ${qtyStepper(tipo, it.id, qty)}
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="catalog-cat">
+        <div class="catalog-cat-title"><span>${cat.nombre}</span>${cat.nota ? `<span class="catalog-cat-nota">${cat.nota}</span>` : ''}</div>
+        ${itemsHtml}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderComida() { renderCatalogo('comida', COMIDA, 'comida-body', comidaQty); updateCatalogCount('comida', comidaQty, 'comida-count'); }
+function renderSpa() { renderCatalogo('spa', SPA, 'spa-body', spaQty); updateCatalogCount('spa', spaQty, 'spa-count'); }
+
+function updateCatalogCount(tipo, qtyState, badgeId) {
+  const total = Object.values(qtyState).reduce((a, b) => a + b, 0);
+  document.getElementById(badgeId).textContent = total;
+}
+
+function cambiarQty(tipo, itemId, delta) {
+  const state = tipo === 'comida' ? comidaQty : spaQty;
+  const nuevo = Math.max(0, (state[itemId] || 0) + delta);
+  if (nuevo === 0) delete state[itemId]; else state[itemId] = nuevo;
+  if (tipo === 'comida') renderComida(); else renderSpa();
+  calcular();
+}
+function setQty(tipo, itemId, val) {
+  const state = tipo === 'comida' ? comidaQty : spaQty;
+  const n = Math.max(0, parseInt(val) || 0);
+  if (n === 0) delete state[itemId]; else state[itemId] = n;
+  if (tipo === 'comida') renderComida(); else renderSpa();
+  calcular();
 }
 
 // ─── TIPO TARIFA ────────────────────────────────────────────
@@ -551,26 +852,27 @@ function setTipo(t) {
   document.getElementById('tab-mensual').classList.toggle('active', t === 'mensual');
   document.getElementById('bloque-diario').style.display = t === 'diario' ? '' : 'none';
   document.getElementById('bloque-mensual').style.display = t === 'mensual' ? '' : 'none';
+  renderCabanas();
   calcular();
 }
-
-function fmt(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
 
 // ─── CÁLCULO PRINCIPAL ──────────────────────────────────────
 function calcular() {
   renderCabanas();
 
-  const cab = CABANAS.find(c => c.id === cabanaSeleccionada);
-  if (!cab) { showEmpty(); return; }
+  if (cabanasSeleccionadas.size === 0) { showEmpty(); return; }
 
   const tipoCliente = document.getElementById('tipo-cliente').value;
   const descManual = parseFloat(document.getElementById('descuento').value) || 0;
   const nombre = document.getElementById('nombre-cliente').value;
+  const lateCheckout = document.getElementById('late-checkout').checked;
 
-  const descAuto = { normal:0, corporativo:10, agencia:15, 'tercera-edad':20 };
+  const descAuto = { normal: 0, corporativo: 10, agencia: 15, 'tercera-edad': 20 };
   const descTotal = Math.min(descManual + descAuto[tipoCliente], 30);
 
-  let subtotal = 0, breakdown = [], noches = 0, temp = 'B', consejos = [];
+  let noches = 0, temp = 'B', consejos = [];
+  let cabinLines = [];       // por cabaña
+  let subtotalCabanas = 0;
 
   if (tipoTarifa === 'diario') {
     const fi = document.getElementById('fecha-in').value;
@@ -583,20 +885,21 @@ function calcular() {
     if (noches <= 0) { showEmpty('La fecha de salida debe ser posterior a la entrada.'); return; }
 
     document.getElementById('noches-display').textContent = noches + ' noche' + (noches > 1 ? 's' : '');
-
     temp = getTemporada(dateIn);
-    const { precioNoche, descDuracion } = getPrecioNoche(cab.id, noches, temp);
-    const precioNocheConDesc = descDuracion > 0 ? Math.round(precioNoche * (1 - descDuracion/100)) : precioNoche;
-    subtotal = precioNocheConDesc * noches;
 
-    breakdown.push({
-      label: `${noches} noche${noches>1?'s':''} · Temp. ${tempLabel(temp)}${descDuracion > 0 ? ' · Desc. estadía ' + descDuracion + '%' : ''}`,
-      noches, precioNoche: precioNocheConDesc, total: subtotal
+    cabanasSeleccionadas.forEach(cabId => {
+      const cab = CABANAS.find(c => c.id === cabId);
+      const { precioNoche, descDuracion } = getPrecioNoche(cabId, noches, temp);
+      const precioNocheConDesc = descDuracion > 0 ? Math.round(precioNoche * (1 - descDuracion / 100)) : precioNoche;
+      const total = precioNocheConDesc * noches;
+      subtotalCabanas += total;
+      cabinLines.push({
+        label: `${cab.icon} ${cab.nombre} — ${noches} noche${noches > 1 ? 's' : ''}${descDuracion > 0 ? ' · desc. ' + descDuracion + '%' : ''}`,
+        precioNoche: precioNocheConDesc, total
+      });
     });
 
-    if (noches < 2) consejos.push({ tipo:'warn', icon:'💡', texto:'Estadías de 1 noche tienen mayor costo operacional. Considera aplicar un recargo por estadía corta (15-20%) o establecer mínimo 2 noches.' });
-    if (noches >= 7 && noches < 30 && descDuracion > 0) consejos.push({ tipo:'info', icon:'✅', texto:'Con ' + noches + ' noches se aplicó el descuento por estadía extendida (' + descDuracion + '%).' });
-    if (noches >= 30 && descDuracion > 0) consejos.push({ tipo:'info', icon:'✅', texto:'Estadía de 30+ días: descuento por larga estadía del ' + descDuracion + '% aplicado.' });
+    if (noches < 2) consejos.push({ tipo: 'warn', icon: '💡', texto: 'Estadías de 1 noche tienen mayor costo operacional. Considera aplicar un recargo por estadía corta (15-20%) o establecer mínimo 2 noches.' });
 
   } else {
     const fm = document.getElementById('fecha-mensual').value;
@@ -605,48 +908,73 @@ function calcular() {
 
     const dateM = new Date(fm + 'T12:00:00');
     temp = getTemporada(dateM);
-    const pm = PRECIOS[cab.id].mensual;
-    const tk = temp === 'A' ? 'A' : temp === 'M' ? 'M' : 'B';
-    const pMes = Math.round((pm[tk].mn + pm[tk].mx) / 2);
-    subtotal = pMes * cantM;
     noches = cantM * 30;
 
-    for (let i = 0; i < cantM; i++) {
-      const d = new Date(dateM); d.setMonth(d.getMonth() + i);
-      const t2 = getTemporada(d);
-      breakdown.push({ label: `Mes ${i+1} — Temp. ${tempLabel(t2)}`, noches:30, precioNoche: Math.round(pMes/30), total: pMes });
-    }
+    cabanasSeleccionadas.forEach(cabId => {
+      const cab = CABANAS.find(c => c.id === cabId);
+      const { valor: pMes } = getCabinPrecioBase(cabId, temp); // usamos override de d1 como referencia si no hay mensual propio
+      const pm = PRECIOS[cabId].mensual;
+      const ovMensual = OV.cabanasMensual && OV.cabanasMensual[cabId] && OV.cabanasMensual[cabId][temp];
+      const pMesFinal = (ovMensual !== undefined && ovMensual !== null) ? ovMensual : Math.round((pm[temp].mn + pm[temp].mx) / 2);
+      const total = pMesFinal * cantM;
+      subtotalCabanas += total;
+      cabinLines.push({
+        label: `${cab.icon} ${cab.nombre} — ${cantM} mes${cantM > 1 ? 'es' : ''}`,
+        precioNoche: Math.round(pMesFinal / 30), total
+      });
+    });
 
-    if (cantM >= 2) consejos.push({ tipo:'info', icon:'💰', texto:`Para ${cantM} meses, considera ofrecer un descuento de fidelización del 5-8% para cerrar antes que el huésped compare opciones.` });
+    if (cantM >= 2) consejos.push({ tipo: 'info', icon: '💰', texto: `Para ${cantM} meses, considera ofrecer un descuento de fidelización del 5-8% para cerrar antes que el huésped compare opciones.` });
   }
 
-  const serviciosSel = Array.from(document.getElementById('servicios').selectedOptions)
-    .map(o => parseInt(o.value)).filter(v => v > 0);
-  const costoServicio = serviciosSel.reduce((a,b) => a+b, 0) * (tipoTarifa === 'diario' ? noches : 1);
+  // Comida
+  let comidaLines = [], subtotalComida = 0;
+  COMIDA.categorias.forEach(cat => cat.items.forEach(it => {
+    const qty = comidaQty[it.id];
+    if (!qty) return;
+    const precio = getItemPrecio(COMIDA, 'comida', it.id, it.precio);
+    const total = precio * qty;
+    subtotalComida += total;
+    comidaLines.push({ label: `${it.nombre} × ${qty}`, total });
+  }));
 
-  const baseConDesc = subtotal * (1 - descTotal/100);
-  const totalFinal = baseConDesc + costoServicio;
+  // Spa
+  let spaLines = [], subtotalSpa = 0;
+  SPA.categorias.forEach(cat => cat.items.forEach(it => {
+    const qty = spaQty[it.id];
+    if (!qty) return;
+    const precio = getItemPrecio(SPA, 'spa', it.id, it.precio);
+    const total = precio * qty;
+    subtotalSpa += total;
+    spaLines.push({ label: `${it.nombre} × ${qty}`, total });
+  }));
 
-  if (tipoCliente === 'corporativo') consejos.push({ tipo:'info', icon:'🏢', texto:'Clientes corporativos: considera pedir orden de compra o adelanto del 30%. Puedes emitir factura con IVA.' });
-  if (tipoCliente === 'tercera-edad') consejos.push({ tipo:'info', icon:'🌟', texto:'Programa Vacaciones Tercera Edad (Sernatur): verifica vigencia del voucher y condiciones del convenio antes de confirmar.' });
-  if (temp === 'A' && descTotal > 10) consejos.push({ tipo:'warn', icon:'⚠️', texto:'Estás aplicando un descuento alto en temporada alta. Evalúa si es necesario — esta es la ventana de mayor rentabilidad del año.' });
-  if (temp === 'B') consejos.push({ tipo:'info', icon:'💡', texto:'Temporada baja: buen momento para ofrecer paquetes especiales (spa, cenas, trekking) que aumenten el ticket promedio sin bajar más el precio base.' });
+  const costoLateCheckout = lateCheckout ? 20000 : 0;
+  const descImporte = Math.round(subtotalCabanas * descTotal / 100);
+  const totalFinal = (subtotalCabanas - descImporte) + subtotalComida + subtotalSpa + costoLateCheckout;
 
-  const p = PRECIOS[cab.id];
-  const tk2 = temp === 'A' ? 'A' : temp === 'M' ? 'M' : 'B';
-  const pMin = tipoTarifa === 'mensual' ? p.mensual[tk2].mn : p.d1[tk2].mn;
-  const pNocheCalc = totalFinal / noches;
-  if (pNocheCalc < pMin * 0.95) consejos.push({ tipo:'alert', icon:'🚨', texto:'El precio por noche resultante (' + fmt(pNocheCalc) + ') está por debajo del mínimo de tabla. Revisa los descuentos aplicados.' });
+  if (tipoCliente === 'corporativo') consejos.push({ tipo: 'info', icon: '🏢', texto: 'Clientes corporativos: considera pedir orden de compra o adelanto del 30%. Puedes emitir factura con IVA.' });
+  if (tipoCliente === 'tercera-edad') consejos.push({ tipo: 'info', icon: '🌟', texto: 'Programa Vacaciones Tercera Edad (Sernatur): verifica vigencia del voucher y condiciones del convenio antes de confirmar.' });
+  if (temp === 'A' && descTotal > 10) consejos.push({ tipo: 'warn', icon: '⚠️', texto: 'Estás aplicando un descuento alto en temporada alta. Evalúa si es necesario — esta es la ventana de mayor rentabilidad del año.' });
+  if (temp === 'B' && subtotalComida === 0 && subtotalSpa === 0) consejos.push({ tipo: 'info', icon: '💡', texto: 'Temporada baja: buen momento para ofrecer comida o spa (más abajo) y así aumentar el ticket promedio sin bajar más el precio base.' });
+  if (cabanasSeleccionadas.size > 1) consejos.push({ tipo: 'info', icon: '🏘️', texto: `Cotización para ${cabanasSeleccionadas.size} cabañas en el mismo período. Confirma disponibilidad simultánea antes de enviar.` });
 
-  const tempClass = { 'B':'temp-baja', 'M':'temp-media', 'A':'temp-alta' }[temp];
+  const tempClass = { 'B': 'temp-baja', 'M': 'temp-media', 'A': 'temp-alta' }[temp];
 
-  let breakdownHTML = breakdown.map(b => `
+  let cabinHTML = cabinLines.map(b => `
     <div class="tramo">
       <span>${b.label}</span>
-      <span class="noches">${fmt(b.precioNoche)}/noche</span>
       <span>${fmt(b.total)}</span>
     </div>
   `).join('');
+
+  let comidaHTML = comidaLines.length ? `<div class="res-group-title">Comida</div>` + comidaLines.map(b => `
+    <div class="tramo"><span>${b.label}</span><span>${fmt(b.total)}</span></div>
+  `).join('') : '';
+
+  let spaHTML = spaLines.length ? `<div class="res-group-title">Spa</div>` + spaLines.map(b => `
+    <div class="tramo"><span>${b.label}</span><span>${fmt(b.total)}</span></div>
+  `).join('') : '';
 
   let consejosHTML = consejos.map(c => `
     <div class="consejo ${c.tipo === 'alert' ? 'alert' : c.tipo === 'warn' ? 'warn' : ''}">
@@ -657,63 +985,74 @@ function calcular() {
 
   var descHtml = '';
   if (descTotal > 0) {
-    var dcLbl = {corporativo:'Corp.',agencia:'Agencia','tercera-edad':'3ª Edad'};
+    var dcLbl = { corporativo: 'Corp.', agencia: 'Agencia', 'tercera-edad': '3ª Edad' };
     var dcSuf = tipoCliente !== 'normal' ? ' (' + dcLbl[tipoCliente] + ')' : '';
-    descHtml = '<div class="res-line"><span class="label">Descuento ' + descTotal + '%' + dcSuf + '</span>'
-      + '<span class="value" style="color:var(--liquen)">-' + fmt(subtotal * descTotal/100) + '</span></div>';
+    descHtml = '<div class="res-line"><span class="label">Descuento ' + descTotal + '%' + dcSuf + ' sobre cabañas</span>'
+      + '<span class="value" style="color:var(--liquen)">-' + fmt(descImporte) + '</span></div>';
   }
-  var svcHtml = costoServicio > 0
-    ? '<div class="res-line"><span class="label">Servicios adicionales</span><span class="value">' + fmt(costoServicio) + '</span></div>'
+  var lateHtml = lateCheckout
+    ? '<div class="res-line"><span class="label">Late check-out</span><span class="value">' + fmt(costoLateCheckout) + '</span></div>'
     : '';
   var totLbl = tipoTarifa === 'mensual'
-    ? (noches/30) + ' mes' + (noches > 30 ? 'es' : '')
+    ? (noches / 30) + ' mes' + (noches > 30 ? 'es' : '')
     : noches + ' noche' + (noches > 1 ? 's' : '');
   var consejosWrap = consejosHTML ? '<div class="consejos">' + consejosHTML + '</div>' : '';
   var clienteHtml = nombre
     ? '<div class="info-cliente"><h4>Cliente</h4><div style="font-size:0.86rem;color:var(--grafito)">'
       + nombre + ' &nbsp;·&nbsp; '
-      + {normal:'Particular',corporativo:'Corporativo',agencia:'Agencia de viajes','tercera-edad':'Tercera Edad'}[tipoCliente]
+      + { normal: 'Particular', corporativo: 'Corporativo', agencia: 'Agencia de viajes', 'tercera-edad': 'Tercera Edad' }[tipoCliente]
       + '</div></div>'
     : '';
-  var banosTxt = cab.banos > 1 ? 's' : '';
   var svgWa = '<svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor">'
     + '<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>'
     + '</svg>';
 
+  const nombresCabanas = Array.from(cabanasSeleccionadas).map(id => CABANAS.find(c => c.id === id));
+  const tituloCab = nombresCabanas.length === 1 ? nombresCabanas[0].nombre : nombresCabanas.length + ' cabañas';
+
   document.getElementById('result-container').innerHTML =
     '<div class="res-header">'
-      + '<h2>' + cab.nombre + ' <span class="temp-indicator ' + tempClass + '">' + tempLabel(temp) + '</span></h2>'
-      + '<div class="res-cabana">' + cab.dorms + ' dormitorios &nbsp;·&nbsp; ' + cab.banos + ' baño' + banosTxt + ' &nbsp;·&nbsp; hasta ' + cab.ocup + ' personas</div>'
+    + '<h2>' + tituloCab + ' <span class="temp-indicator ' + tempClass + '">' + tempLabel(temp) + '</span></h2>'
+    + '<div class="res-cabana">' + nombresCabanas.map(c => c.nombre).join(' · ') + '</div>'
     + '</div>'
     + '<div class="res-body">'
-      + '<div class="res-line"><span class="label">Subtotal base</span><span class="value">' + fmt(subtotal) + '</span></div>'
-      + descHtml
-      + svcHtml
-      + '<div class="res-line"><span class="label">Precio por noche</span><span class="value">' + fmt(totalFinal/noches) + '</span></div>'
+    + '<div class="res-group-title">Cabañas</div>'
+    + cabinHTML
+    + comidaHTML
+    + spaHTML
+    + '<div style="margin-top:10px">'
+    + '<div class="res-line"><span class="label">Subtotal cabañas</span><span class="value">' + fmt(subtotalCabanas) + '</span></div>'
+    + descHtml
+    + (subtotalComida > 0 ? '<div class="res-line"><span class="label">Subtotal comida</span><span class="value">' + fmt(subtotalComida) + '</span></div>' : '')
+    + (subtotalSpa > 0 ? '<div class="res-line"><span class="label">Subtotal spa</span><span class="value">' + fmt(subtotalSpa) + '</span></div>' : '')
+    + lateHtml
+    + '</div>'
     + '</div>'
     + '<div class="res-total">'
-      + '<span class="tot-label">Total ' + totLbl + '</span>'
-      + '<span class="tot-amount">' + fmt(totalFinal) + '</span>'
+    + '<span class="tot-label">Total ' + totLbl + '</span>'
+    + '<span class="tot-amount">' + fmt(totalFinal) + '</span>'
     + '</div>'
-    + '<div class="res-breakdown"><h4>Desglose</h4>' + breakdownHTML + '</div>'
     + consejosWrap
     + '<div class="btn-row">'
-      + '<button class="btn btn-primary" onclick="generarCotizacion()" type="button">📄 Generar cotización</button>'
-      + '<button class="btn btn-secondary" onclick="copiarResumen()" type="button">📋 Copiar</button>'
+    + '<button class="btn btn-primary" onclick="generarCotizacion()" type="button">📄 Generar cotización</button>'
+    + '<button class="btn btn-secondary" onclick="copiarResumen()" type="button">📋 Copiar</button>'
     + '</div>'
     + '<div class="btn-row" style="padding-top:0">'
-      + '<button class="btn btn-whatsapp" onclick="enviarWhatsApp()" type="button">' + svgWa + ' Consultar disponibilidad</button>'
+    + '<button class="btn btn-whatsapp" onclick="enviarWhatsApp()" type="button">' + svgWa + ' Consultar disponibilidad</button>'
     + '</div>'
     + clienteHtml;
 
-  window.__ultimaCotizacion = { cab, tipoCliente, nombre, descTotal, noches, temp, subtotal, costoServicio, totalFinal, totLbl, tipoTarifa };
+  window.__ultimaCotizacion = {
+    nombresCabanas, cabinLines, comidaLines, spaLines, tipoCliente, nombre, descTotal, descImporte,
+    noches, temp, subtotalCabanas, subtotalComida, subtotalSpa, costoLateCheckout, totalFinal, totLbl, tipoTarifa
+  };
 }
 
 function showEmpty(msg) {
   document.getElementById('result-container').innerHTML = `
     <div class="empty-state">
       <div class="icon">🏔️</div>
-      <p>${msg || 'Selecciona una cabaña y las fechas para ver el desglose de precios.'}</p>
+      <p>${msg || 'Selecciona una o más cabañas y las fechas para ver el desglose de precios.'}</p>
     </div>
   `;
   window.__ultimaCotizacion = null;
@@ -731,13 +1070,12 @@ function getNumeroCotizacion() {
 function generarCotizacion() {
   const st = window.__ultimaCotizacion;
   if (!st) return;
-  const { cab, tipoCliente, nombre, descTotal, noches, temp, subtotal, costoServicio, totalFinal, totLbl, tipoTarifa } = st;
+  const { nombresCabanas, cabinLines, comidaLines, spaLines, tipoCliente, nombre, descTotal, descImporte, noches, temp, subtotalCabanas, subtotalComida, subtotalSpa, costoLateCheckout, totalFinal, totLbl, tipoTarifa } = st;
 
   const adultos = parseInt(document.getElementById('adultos').value) || 2;
   const ninos = parseInt(document.getElementById('ninos').value) || 0;
   const mascotas = document.getElementById('mascotas').value === '1' ? 'Sí' : 'No';
 
-  const descImporte = Math.round(subtotal * descTotal / 100);
   const afecto = Math.round(totalFinal / 1.19);
   const iva = totalFinal - afecto;
 
@@ -747,7 +1085,11 @@ function generarCotizacion() {
   const hoy = new Date().toLocaleDateString('es-CL');
   const numCot = getNumeroCotizacion();
 
-  const tipoClienteLbl = {normal:'Particular',corporativo:'Corporativo / Empresa',agencia:'Agencia de viajes','tercera-edad':'Tercera Edad (Sernatur)'}[tipoCliente];
+  const tipoClienteLbl = { normal: 'Particular', corporativo: 'Corporativo / Empresa', agencia: 'Agencia de viajes', 'tercera-edad': 'Tercera Edad (Sernatur)' }[tipoCliente];
+
+  const filasCab = nombresCabanas.map((c, i) => `<tr><td>${c.icon} ${c.nombre}</td><td>${c.dorms} dorm · ${c.banos} baño${c.banos > 1 ? 's' : ''} · hasta ${c.ocup} pax</td><td>${cabinLines[i] ? fmt(cabinLines[i].total) : ''}</td></tr>`).join('');
+  const filasComida = comidaLines.map(l => `<tr><td colspan="2">🍽️ ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
+  const filasSpa = spaLines.map(l => `<tr><td colspan="2">💆 ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
 
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html>
@@ -781,7 +1123,7 @@ table.items{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:9pt
 table.items th{background:var(--grafito);color:var(--hueso);padding:7px 9px;text-align:left;font-family:'Space Grotesk',sans-serif;font-size:8pt;font-weight:600;}
 table.items td{border-bottom:1px solid var(--arena);padding:7px 9px;}
 
-.totales{border:1px solid var(--arena);border-radius:8px;overflow:hidden;margin-bottom:14px;max-width:320px;margin-left:auto;}
+.totales{border:1px solid var(--arena);border-radius:8px;overflow:hidden;margin-bottom:14px;max-width:340px;margin-left:auto;}
 .totales table{width:100%;border-collapse:collapse;font-size:9pt;}
 .totales td{padding:6px 14px;border-bottom:1px solid var(--arena);}
 .totales td:last-child{text-align:right;font-weight:600;}
@@ -835,20 +1177,21 @@ table.items td{border-bottom:1px solid var(--arena);padding:7px 9px;}
   </div>
 
   <table class="items">
-    <tr><th>Cabaña</th><th>Detalle</th><th>Período</th><th>Temporada</th></tr>
-    <tr>
-      <td>${cab.icon} ${cab.nombre}</td>
-      <td>${cab.dorms} dorm · ${cab.banos} baño${cab.banos>1?'s':''} · hasta ${cab.ocup} pax</td>
-      <td>${tipoTarifa === 'diario' ? fmtFecha(fechaInVal) + ' — ' + fmtFecha(fechaOutVal) : fmtFecha(fechaInVal) + ' (' + (noches/30) + ' mes/es)'}</td>
-      <td>${tempLabel(temp)}</td>
-    </tr>
+    <tr><th>Ítem</th><th>Detalle</th><th>Total</th></tr>
+    ${filasCab}
+    ${filasComida}
+    ${filasSpa}
   </table>
 
   <div class="totales">
     <table>
-      <tr><td>Subtotal (${totLbl})</td><td>${fmt(subtotal)}</td></tr>
-      ${descTotal > 0 ? '<tr><td>Descuento ' + descTotal + '%</td><td>-' + fmt(descImporte) + '</td></tr>' : ''}
-      ${costoServicio > 0 ? '<tr><td>Servicios adicionales</td><td>' + fmt(costoServicio) + '</td></tr>' : ''}
+      <tr><td>Período</td><td>${tipoTarifa === 'diario' ? fmtFecha(fechaInVal) + ' — ' + fmtFecha(fechaOutVal) : fmtFecha(fechaInVal) + ' (' + totLbl + ')'}</td></tr>
+      <tr><td>Temporada</td><td>${tempLabel(temp)}</td></tr>
+      <tr><td>Subtotal cabañas (${totLbl})</td><td>${fmt(subtotalCabanas)}</td></tr>
+      ${descTotal > 0 ? '<tr><td>Descuento ' + descTotal + '% (cabañas)</td><td>-' + fmt(descImporte) + '</td></tr>' : ''}
+      ${subtotalComida > 0 ? '<tr><td>Subtotal comida</td><td>' + fmt(subtotalComida) + '</td></tr>' : ''}
+      ${subtotalSpa > 0 ? '<tr><td>Subtotal spa</td><td>' + fmt(subtotalSpa) + '</td></tr>' : ''}
+      ${costoLateCheckout > 0 ? '<tr><td>Late check-out</td><td>' + fmt(costoLateCheckout) + '</td></tr>' : ''}
       <tr><td>Monto afecto (neto)</td><td>${fmt(afecto)}</td></tr>
       <tr><td>IVA (19%)</td><td>${fmt(iva)}</td></tr>
       <tr class="total-row"><td>TOTAL</td><td>${fmt(totalFinal)}</td></tr>
@@ -862,6 +1205,7 @@ table.items td{border-bottom:1px solid var(--arena);padding:7px 9px;}
       <li>Precios sujetos a disponibilidad al momento de confirmar la reserva.</li>
       <li>Para reservar se requiere abono del 50% del valor total.</li>
       <li>Check-in 16:00 hrs · Check-out 11:00 hrs, salvo acuerdo previo.</li>
+      <li>Comida y spa se coordinan según menú elegido, fechas y N° de personas.</li>
     </ol>
   </div>
 
@@ -878,17 +1222,19 @@ table.items td{border-bottom:1px solid var(--arena);padding:7px 9px;}
 function copiarResumen() {
   const st = window.__ultimaCotizacion;
   if (!st) return;
-  const { cab, nombre, noches, temp, totalFinal, totLbl, tipoTarifa } = st;
+  const { nombresCabanas, nombre, temp, totalFinal, totLbl, tipoTarifa, subtotalComida, subtotalSpa } = st;
   const fechaInVal = tipoTarifa === 'diario' ? document.getElementById('fecha-in').value : document.getElementById('fecha-mensual').value;
   const fechaOutVal = tipoTarifa === 'diario' ? document.getElementById('fecha-out').value : '';
   const fmtFecha = s => s ? s.split('-').reverse().join('/') : '—';
 
   const texto = `MAPULAUQUEN · Cotización\n`
-    + `Cabaña: ${cab.nombre} (${cab.dorms} dorm, hasta ${cab.ocup} pax)\n`
+    + `Cabañas: ${nombresCabanas.map(c => c.nombre).join(', ')}\n`
     + (tipoTarifa === 'diario'
-        ? `Fechas: ${fmtFecha(fechaInVal)} — ${fmtFecha(fechaOutVal)} (${totLbl})\n`
-        : `Inicio: ${fmtFecha(fechaInVal)} (${totLbl})\n`)
+      ? `Fechas: ${fmtFecha(fechaInVal)} — ${fmtFecha(fechaOutVal)} (${totLbl})\n`
+      : `Inicio: ${fmtFecha(fechaInVal)} (${totLbl})\n`)
     + `Temporada: ${tempLabel(temp)}\n`
+    + (subtotalComida > 0 ? `Incluye comida: ${fmt(subtotalComida)}\n` : '')
+    + (subtotalSpa > 0 ? `Incluye spa: ${fmt(subtotalSpa)}\n` : '')
     + (nombre ? `Cliente: ${nombre}\n` : '')
     + `Total: ${fmt(totalFinal)}`;
 
@@ -903,24 +1249,234 @@ function copiarResumen() {
 function enviarWhatsApp() {
   const st = window.__ultimaCotizacion;
   if (!st) return;
-  const { cab, nombre, noches, temp, totalFinal, totLbl, tipoTarifa } = st;
+  const { nombresCabanas, nombre, temp, totalFinal, totLbl, tipoTarifa } = st;
   const fechaInVal = tipoTarifa === 'diario' ? document.getElementById('fecha-in').value : document.getElementById('fecha-mensual').value;
   const fechaOutVal = tipoTarifa === 'diario' ? document.getElementById('fecha-out').value : '';
   const fmtFecha = s => s ? s.split('-').reverse().join('/') : '—';
 
   const texto = `Hola! Quisiera consultar disponibilidad en Mapulauquen.\n`
-    + `Cabaña: ${cab.nombre}\n`
+    + `Cabaña(s): ${nombresCabanas.map(c => c.nombre).join(', ')}\n`
     + (tipoTarifa === 'diario'
-        ? `Fechas: ${fmtFecha(fechaInVal)} - ${fmtFecha(fechaOutVal)}\n`
-        : `Inicio: ${fmtFecha(fechaInVal)} (${totLbl})\n`)
+      ? `Fechas: ${fmtFecha(fechaInVal)} - ${fmtFecha(fechaOutVal)}\n`
+      : `Inicio: ${fmtFecha(fechaInVal)} (${totLbl})\n`)
     + (nombre ? `Nombre: ${nombre}\n` : '')
     + `Total estimado: ${fmt(totalFinal)}`;
 
   window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank');
 }
 
+// ═══════════════════════════════════════════════════════════
+// MODO ADMIN
+// ═══════════════════════════════════════════════════════════
+function updateAdminButton() {
+  const btn = document.getElementById('btn-admin');
+  btn.textContent = adminMode ? '🔓 Admin activo' : '🔒 Admin';
+  btn.classList.toggle('on', adminMode);
+}
+
+function toggleAdmin() {
+  if (adminMode) {
+    adminMode = false;
+    document.getElementById('admin-overlay').hidden = true;
+    updateAdminButton();
+    renderCabanas(); renderComida(); renderSpa(); calcular();
+    return;
+  }
+  const pw = prompt('Clave de acceso al Modo Admin:');
+  if (pw === null) return;
+  if (pw === CONFIG.adminPassword) {
+    adminMode = true;
+    updateAdminButton();
+    document.getElementById('admin-overlay').hidden = false;
+    renderAdminModal();
+    renderCabanas(); renderComida(); renderSpa(); calcular();
+  } else {
+    alert('Clave incorrecta.');
+  }
+}
+
+function setAdminTab(t) { adminTab = t; renderAdminModal(); }
+
+function renderAdminModal() {
+  const tabs = [
+    { id: 'cabanas', label: 'Cabañas' },
+    { id: 'comida', label: 'Comida' },
+    { id: 'spa', label: 'Spa' },
+    { id: 'temporadas', label: 'Temporadas' },
+  ];
+  document.getElementById('admin-tabs').innerHTML = tabs.map(t =>
+    `<button class="admin-tab ${adminTab === t.id ? 'active' : ''}" onclick="setAdminTab('${t.id}')" type="button">${t.label}</button>`
+  ).join('');
+
+  const body = document.getElementById('admin-body');
+  if (adminTab === 'cabanas') body.innerHTML = renderAdminCabanas();
+  else if (adminTab === 'comida') body.innerHTML = renderAdminCatalogo('comida', COMIDA);
+  else if (adminTab === 'spa') body.innerHTML = renderAdminCatalogo('spa', SPA);
+  else if (adminTab === 'temporadas') body.innerHTML = renderAdminTemporadas();
+}
+
+function renderAdminCabanas() {
+  const rows = CABANAS.map(c => {
+    const b = getCabinPrecioBase(c.id, 'B');
+    const m = getCabinPrecioBase(c.id, 'M');
+    const a = getCabinPrecioBase(c.id, 'A');
+    return `<tr>
+      <td>${c.icon} ${c.nombre}</td>
+      <td><input type="number" step="1000" value="${b.valor}" onchange="setCabinOverride('${c.id}','B',this.value); renderCabanas(); calcular();"></td>
+      <td><input type="number" step="1000" value="${m.valor}" onchange="setCabinOverride('${c.id}','M',this.value); renderCabanas(); calcular();"></td>
+      <td><input type="number" step="1000" value="${a.valor}" onchange="setCabinOverride('${c.id}','A',this.value); renderCabanas(); calcular();"></td>
+    </tr>`;
+  }).join('');
+  return `
+    <p class="admin-note">Precio por noche usado en el cotizador para cada temporada (promedio actual de la tabla). Los descuentos por estadía de 7+ y 30+ noches se siguen calculando sobre la tabla original.</p>
+    <table class="admin-table">
+      <tr><th>Cabaña</th><th>Baja</th><th>Media <span class="season-pill M">M</span></th><th>Alta <span class="season-pill A">A</span></th></tr>
+      ${rows}
+    </table>
+  `;
+}
+
+function renderAdminCatalogo(tipo, catalogo) {
+  const secciones = catalogo.categorias.map(cat => {
+    const rows = cat.items.map(it => {
+      const precio = getItemPrecio(catalogo, tipo, it.id, it.precio);
+      return `<tr>
+        <td>${it.nombre}${it.detalle ? '<br><span style="color:var(--bruma);font-size:0.7rem">' + it.detalle + '</span>' : ''}</td>
+        <td><input type="number" step="100" value="${precio}" onchange="setItemOverride('${tipo}','${it.id}',this.value); render${tipo === 'comida' ? 'Comida' : 'Spa'}(); calcular();"></td>
+      </tr>`;
+    }).join('');
+    return `<span class="admin-cat-label">${cat.nombre}</span><table class="admin-table"><tr><th>Ítem</th><th>Precio</th></tr>${rows}</table>`;
+  }).join('');
+  return `<p class="admin-note">Los cambios se guardan automáticamente en este navegador.</p>${secciones}`;
+}
+
+function renderAdminTemporadas() {
+  const reglas = getTemporadaReglas();
+  const rows = reglas.map((r, i) => `
+    <tr>
+      <td><input type="text" value="${r.nombre}" onchange="editTemporada(${i},'nombre',this.value)"></td>
+      <td>
+        <select onchange="editTemporada(${i},'tipo',this.value)" style="padding:5px;border:1px solid var(--piedra);border-radius:5px">
+          <option value="A" ${r.tipo === 'A' ? 'selected' : ''}>Alta</option>
+          <option value="M" ${r.tipo === 'M' ? 'selected' : ''}>Media</option>
+        </select>
+      </td>
+      <td><input type="number" min="1" max="12" value="${r.desde.mes}" style="width:44px" onchange="editTemporadaFecha(${i},'desde','mes',this.value)"> / <input type="number" min="1" max="31" value="${r.desde.dia}" style="width:44px" onchange="editTemporadaFecha(${i},'desde','dia',this.value)"></td>
+      <td><input type="number" min="1" max="12" value="${r.hasta.mes}" style="width:44px" onchange="editTemporadaFecha(${i},'hasta','mes',this.value)"> / <input type="number" min="1" max="31" value="${r.hasta.dia}" style="width:44px" onchange="editTemporadaFecha(${i},'hasta','dia',this.value)"></td>
+      <td><button class="admin-mini-btn" onclick="eliminarTemporada(${i})" type="button">Eliminar</button></td>
+    </tr>
+  `).join('');
+  return `
+    <p class="admin-note">Cualquier fecha que no caiga en una de estas reglas se cotiza como Temporada Baja. Formato de fecha: mes / día. Los rangos pueden cruzar fin de año (ej: 15 / 12 → 15 / 3).</p>
+    <table class="admin-table">
+      <tr><th>Nombre</th><th>Tipo</th><th>Desde (mes/día)</th><th>Hasta (mes/día)</th><th></th></tr>
+      ${rows}
+    </table>
+    <div style="margin-top:12px">
+      <button class="admin-mini-btn" onclick="agregarTemporada()" type="button">+ Agregar regla</button>
+    </div>
+  `;
+}
+
+function ensureTemporadaOverride() {
+  if (!OV.temporadas) OV.temporadas = JSON.parse(JSON.stringify(CONFIG.temporadas.reglas));
+}
+function editTemporada(i, campo, valor) {
+  ensureTemporadaOverride();
+  OV.temporadas[i][campo] = valor;
+  saveOverrides();
+  renderCabanas(); calcular();
+}
+function editTemporadaFecha(i, cual, campo, valor) {
+  ensureTemporadaOverride();
+  OV.temporadas[i][cual][campo] = Math.max(1, parseInt(valor) || 1);
+  saveOverrides();
+  renderCabanas(); calcular();
+}
+function agregarTemporada() {
+  ensureTemporadaOverride();
+  OV.temporadas.push({ nombre: 'Nueva regla', tipo: 'M', desde: { mes: 1, dia: 1 }, hasta: { mes: 1, dia: 1 } });
+  saveOverrides();
+  renderAdminModal();
+}
+function eliminarTemporada(i) {
+  ensureTemporadaOverride();
+  OV.temporadas.splice(i, 1);
+  saveOverrides();
+  renderAdminModal();
+  renderCabanas(); calcular();
+}
+
+// ─── EXPORTAR precios.js ACTUALIZADO ────────────────────────
+function exportPreciosJs() {
+  const cabanasOut = CABANAS.map(c => {
+    const parts = ['B', 'M', 'A'].map(t => {
+      const base = PRECIOS[c.id].d1[t];
+      const ov = OV.cabanas && OV.cabanas[c.id] && OV.cabanas[c.id][t];
+      if (ov !== undefined && ov !== null) return `    ${t}:{mn:${ov}, mx:${ov}} /* editado en Modo Admin */`;
+      return `    ${t}:{mn:${base.mn}, mx:${base.mx}}`;
+    }).join(',\n');
+    return `  ${c.id}: {\n    d1: {\n${parts}\n    },\n    d7: ${JSON.stringify(PRECIOS[c.id].d7)},\n    d30: ${JSON.stringify(PRECIOS[c.id].d30)},\n    mensual: ${JSON.stringify(PRECIOS[c.id].mensual)}\n  }`;
+  }).join(',\n');
+
+  const comidaOut = JSON.stringify(COMIDA.categorias.map(cat => ({
+    ...cat, items: cat.items.map(it => ({ ...it, precio: getItemPrecio(COMIDA, 'comida', it.id, it.precio) }))
+  })), null, 2);
+
+  const spaOut = JSON.stringify(SPA.categorias.map(cat => ({
+    ...cat, items: cat.items.map(it => ({ ...it, precio: getItemPrecio(SPA, 'spa', it.id, it.precio) }))
+  })), null, 2);
+
+  const temporadasOut = JSON.stringify(getTemporadaReglas(), null, 2);
+
+  const contenido = `// ═══════════════════════════════════════════════════════════════
+// MAPULAUQUEN · Archivo de precios y configuración
+// Generado desde el Modo Admin del cotizador el ${new Date().toLocaleString('es-CL')}
+// Reemplaza el precios.js del repositorio por este archivo para que
+// los cambios queden disponibles en todos los equipos.
+// ═══════════════════════════════════════════════════════════════
+
+window.MP_CONFIG = {
+
+adminPassword: ${JSON.stringify(CONFIG.adminPassword)},
+sheetCsvUrl: ${JSON.stringify(CONFIG.sheetCsvUrl || '')},
+
+temporadas: {
+  reglas: ${temporadasOut}
+},
+
+cabanas: ${JSON.stringify(CABANAS, null, 2)},
+
+precios: {
+${cabanasOut}
+},
+
+comida: {
+  categorias: ${comidaOut}
+},
+
+spa: {
+  categorias: ${spaOut}
+}
+
+};
+`;
+
+  const blob = new Blob([contenido], { type: 'text/javascript' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'precios.js';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 // ─── INIT ─────────────────────────────────────────────────
 renderCabanas();
+renderComida();
+renderSpa();
 </script>
 
 </body>
