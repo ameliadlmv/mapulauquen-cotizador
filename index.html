@@ -286,6 +286,25 @@
   .manual-price-input:disabled{ opacity:0.4; }
   .manual-price-input:focus{ outline:none; border-color:var(--grafito); }
 
+  .salon-item-controls{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .salon-qty-input{
+    width:56px; padding:6px 7px; border:1.5px solid var(--piedra); border-radius:5px;
+    font-family:'Space Grotesk', sans-serif; font-size:0.82rem; font-weight:600; text-align:center;
+    background:var(--lino); color:var(--grafito);
+  }
+  .salon-qty-input:focus{ outline:none; border-color:var(--grafito); }
+  .salon-item-total{
+    font-family:'Space Grotesk', sans-serif; font-size:0.78rem; font-weight:600;
+    color:var(--liquen); min-width:74px; text-align:right;
+  }
+  .salon-normas-box{
+    background:var(--lino); border:1px solid var(--arena); border-radius:8px;
+    padding:10px 12px; margin-bottom:12px; font-size:0.74rem; color:var(--grafito); line-height:1.6;
+  }
+  .salon-normas-box strong{ display:block; font-family:'Space Grotesk', sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--bruma); margin-bottom:6px; }
+  .salon-normas-box ul{ margin:0; padding-left:16px; }
+  .salon-normas-box li{ margin-bottom:2px; }
+
   .precio-rango{
     background:var(--lino);
     border-radius:8px;
@@ -687,6 +706,12 @@ function getSalonCategorias() {
 function ensureSalonOverride() {
   if (!OV.salon) OV.salon = JSON.parse(JSON.stringify(SALON.categorias));
 }
+function getSalonNormas() {
+  return (OV.salonNormas && OV.salonNormas.length) ? OV.salonNormas : (SALON.normas || []);
+}
+function ensureSalonNormasOverride() {
+  if (!OV.salonNormas) OV.salonNormas = JSON.parse(JSON.stringify(SALON.normas || []));
+}
 
 function getCabinPrecioBase(cabId, temp) {
   const p = PRECIOS[cabId];
@@ -770,7 +795,7 @@ let cabanasSeleccionadas = new Set();
 let tipoTarifa = 'diario';
 let comidaQty = {};   // { itemId: qty }
 let spaQty = {};      // { itemId: qty }
-let salonSel = {};    // { itemId: {incluido, precio} } — precio manual, no viene de catálogo
+let salonSel = {};    // { itemId: {cantidad, precio} } — cantidad y precio manuales, no vienen del catálogo
 let adminMode = false;
 let adminTab = 'cabanas';
 
@@ -859,26 +884,41 @@ function updateCatalogCount(tipo, qtyState, badgeId) {
   document.getElementById(badgeId).textContent = total;
 }
 
-// ─── RENDER SALÓN (ítems de precio manual) ───────────────────
+// ─── RENDER SALÓN (ítems de precio y cantidad manual) ────────
+// Cada ítem tiene cantidad + precio unitario, ambos escritos por la
+// persona que cotiza (ej. "Adicional por persona": cantidad = N°
+// de personas extra, precio = valor por persona). El total del ítem
+// se recalcula solo. Así se pueden cubrir aumentos de aforo sin
+// tener que crear ítems nuevos cada vez.
+function renderSalonNormas() {
+  const normas = getSalonNormas();
+  if (!normas.length) return '';
+  return `
+    <div class="salon-normas-box">
+      <strong>Normas del salón</strong>
+      <ul>${normas.map(n => `<li>${n}</li>`).join('')}</ul>
+    </div>
+  `;
+}
 function renderSalon() {
   const cats = getSalonCategorias();
   const cont = document.getElementById('salon-body');
-  cont.innerHTML = cats.map(cat => {
-    const itemsHtml = cat.items.map(it => {
-      const sel = salonSel[it.id] || { incluido: false, precio: '' };
+  const itemsHtml = cats.map(cat => {
+    const filas = cat.items.map(it => {
+      const sel = salonSel[it.id] || { cantidad: 0, precio: 0 };
+      const total = (sel.cantidad || 0) * (sel.precio || 0);
       return `
         <div class="catalog-item manual">
           <div class="catalog-item-info">
-            <label>
-              <input type="checkbox" ${sel.incluido ? 'checked' : ''} onchange="toggleSalonItem('${it.id}', this.checked)">
-              <span class="catalog-item-nombre">${it.nombre}</span>
-            </label>
-            ${it.detalle ? `<div class="catalog-item-detalle" style="margin-left:24px">${it.detalle}</div>` : ''}
+            <span class="catalog-item-nombre">${it.nombre}</span>
+            ${it.detalle ? `<div class="catalog-item-detalle">${it.detalle}</div>` : ''}
           </div>
-          <div class="catalog-item-precio">
-            <input type="number" class="manual-price-input" min="0" step="1000" placeholder="Precio $"
-              value="${sel.precio || ''}" ${sel.incluido ? '' : 'disabled'}
-              onchange="setSalonPrecio('${it.id}', this.value)">
+          <div class="salon-item-controls">
+            <input type="number" class="salon-qty-input" min="0" step="1" placeholder="0" title="Cantidad"
+              value="${sel.cantidad || ''}" onchange="setSalonCantidad('${it.id}', this.value)">
+            <input type="number" class="manual-price-input" min="0" step="1000" placeholder="Precio unit. $" title="Precio unitario"
+              value="${sel.precio || ''}" onchange="setSalonPrecio('${it.id}', this.value)">
+            <span class="salon-item-total">${total > 0 ? fmt(total) : ''}</span>
           </div>
         </div>
       `;
@@ -886,25 +926,27 @@ function renderSalon() {
     return `
       <div class="catalog-cat">
         <div class="catalog-cat-title"><span>${cat.nombre}</span></div>
-        ${itemsHtml}
+        ${filas}
       </div>
     `;
   }).join('');
+  cont.innerHTML = renderSalonNormas() + itemsHtml;
   updateSalonCount();
 }
-function toggleSalonItem(itemId, incluido) {
-  if (!salonSel[itemId]) salonSel[itemId] = { incluido: false, precio: 0 };
-  salonSel[itemId].incluido = incluido;
+function setSalonCantidad(itemId, valor) {
+  if (!salonSel[itemId]) salonSel[itemId] = { cantidad: 0, precio: 0 };
+  salonSel[itemId].cantidad = Math.max(0, Math.round(parseFloat(valor)) || 0);
   renderSalon();
   calcular();
 }
 function setSalonPrecio(itemId, valor) {
-  if (!salonSel[itemId]) salonSel[itemId] = { incluido: true, precio: 0 };
+  if (!salonSel[itemId]) salonSel[itemId] = { cantidad: 0, precio: 0 };
   salonSel[itemId].precio = Math.max(0, parseFloat(valor) || 0);
+  renderSalon();
   calcular();
 }
 function updateSalonCount() {
-  const n = Object.values(salonSel).filter(s => s.incluido).length;
+  const n = Object.values(salonSel).filter(s => (s.cantidad || 0) > 0).length;
   document.getElementById('salon-count').textContent = n;
 }
 
@@ -1043,14 +1085,16 @@ function calcular() {
     spaLines.push({ label: `${it.nombre} × ${qty}`, total });
   }));
 
-  // Salón (precio manual)
+  // Salón (cantidad y precio manuales)
   let salonLines = [], subtotalSalon = 0;
   getSalonCategorias().forEach(cat => cat.items.forEach(it => {
     const sel = salonSel[it.id];
-    if (!sel || !sel.incluido) return;
+    if (!sel || !sel.cantidad) return;
+    const cantidad = sel.cantidad || 0;
     const precio = sel.precio || 0;
-    subtotalSalon += precio;
-    salonLines.push({ label: it.nombre, total: precio });
+    const total = cantidad * precio;
+    subtotalSalon += total;
+    salonLines.push({ label: it.nombre + (cantidad !== 1 ? ` × ${cantidad}` : ''), total });
   }));
 
   const hayAlgo = (hayCabanas && noches > 0) || subtotalComida > 0 || subtotalSpa > 0 || subtotalSalon > 0;
@@ -1207,6 +1251,12 @@ function generarCotizacion() {
   const filasComida = comidaLines.map(l => `<tr><td colspan="2">🍽️ ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
   const filasSpa = spaLines.map(l => `<tr><td colspan="2">💆 ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
   const filasSalon = salonLines.map(l => `<tr><td colspan="2">🎪 ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
+  const normasSalon = getSalonNormas();
+  const normasSalonHtml = (subtotalSalon > 0 && normasSalon.length) ? `
+  <div class="obs-box">
+    <h4>Normas del salón</h4>
+    <ol>${normasSalon.map(n => `<li>${n}</li>`).join('')}</ol>
+  </div>` : '';
 
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html>
@@ -1327,6 +1377,7 @@ table.items td{border-bottom:1px solid var(--arena);padding:7px 9px;}
       <li>Comida y spa se coordinan según menú elegido, fechas y N° de personas.</li>
     </ol>
   </div>
+  ${normasSalonHtml}
 
   <div class="footer">
     <strong>Mapulauquen</strong> · Cabañas &amp; Wellness · Villarrica<br>
@@ -1494,7 +1545,44 @@ function renderAdminSalon() {
         <button class="admin-mini-btn" onclick="agregarSalonItem(${ci})" type="button">+ Agregar ítem</button>
       </div>`;
   }).join('');
-  return `<p class="admin-note">Estos servicios tienen precio manual: se escribe cada vez que armas la cotización, según lo que corresponda a ese evento. Aquí editas el nombre y el detalle (lo que incluye) de cada uno.</p>${secciones}`;
+  const normas = getSalonNormas();
+  const normasRows = normas.map((n, ni) => `
+    <tr>
+      <td><input type="text" value="${n}" onchange="editSalonNorma(${ni},this.value)"></td>
+      <td><button class="admin-mini-btn" onclick="eliminarSalonNorma(${ni})" type="button">Eliminar</button></td>
+    </tr>`).join('');
+  const normasHtml = `
+    <span class="admin-cat-label">Normas del salón</span>
+    <p class="admin-note" style="margin-top:-6px">Aparecen en el panel de cotización y en la cotización imprimible cada vez que se incluye algún ítem de salón.</p>
+    <table class="admin-table">
+      <tr><th>Norma</th><th></th></tr>
+      ${normasRows}
+    </table>
+    <div style="margin-top:8px;margin-bottom:16px">
+      <button class="admin-mini-btn" onclick="agregarSalonNorma()" type="button">+ Agregar norma</button>
+    </div>
+  `;
+  return `<p class="admin-note">Estos ítems tienen cantidad y precio manuales: los escribes cada vez que armas la cotización, según lo que corresponda a ese evento (ej. N° de personas sobre el aforo base). Aquí editas el nombre y el detalle (lo que incluye) de cada uno, y puedes agregar ítems nuevos si necesitas cubrir un caso distinto.</p>${secciones}${normasHtml}`;
+}
+function editSalonNorma(ni, valor) {
+  ensureSalonNormasOverride();
+  OV.salonNormas[ni] = valor;
+  saveOverrides();
+  renderSalon();
+}
+function agregarSalonNorma() {
+  ensureSalonNormasOverride();
+  OV.salonNormas.push('Nueva norma');
+  saveOverrides();
+  renderAdminModal();
+  renderSalon();
+}
+function eliminarSalonNorma(ni) {
+  ensureSalonNormasOverride();
+  OV.salonNormas.splice(ni, 1);
+  saveOverrides();
+  renderAdminModal();
+  renderSalon();
 }
 function editSalonItem(ci, ii, campo, valor) {
   ensureSalonOverride();
@@ -1597,6 +1685,7 @@ function exportPreciosJs() {
   })), null, 2);
 
   const salonOut = JSON.stringify(getSalonCategorias(), null, 2);
+  const salonNormasOut = JSON.stringify(getSalonNormas(), null, 2);
 
   const temporadasOut = JSON.stringify(getTemporadaReglas(), null, 2);
 
@@ -1631,7 +1720,8 @@ spa: {
 },
 
 salon: {
-  categorias: ${salonOut}
+  categorias: ${salonOut},
+  normas: ${salonNormasOut}
 }
 
 };

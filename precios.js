@@ -213,9 +213,12 @@ spa: {
 
 // ─── SALÓN Y MONTAJE ────────────────────────────────────────────
 // Ítems de precio MANUAL: no tienen un valor fijo — se escribe el
-// precio cada vez que se arma la cotización. El campo "detalle" es
-// fijo (lo que incluye el servicio) y se muestra siempre; se edita
-// desde el Modo Admin, igual que se pueden agregar o quitar ítems.
+// precio (y la cantidad) cada vez que se arma la cotización. Así se
+// pueden cotizar ítems que escalan con el N° de personas (ej. "Adicional
+// por persona" con cantidad = personas extra sobre el aforo base).
+// El campo "detalle" es fijo (lo que incluye el ítem) y se muestra
+// siempre; se edita desde el Modo Admin, igual que se pueden agregar
+// o quitar ítems.
 salon: {
   categorias: [
     { id:'salon-eventos', nombre:'Salón de Eventos y Montaje', items:[
@@ -225,7 +228,22 @@ salon: {
         detalle:'Mantelería para las mesas del evento (cantidad y tipo a coordinar con la clienta).' },
       { id:'sal03', nombre:'Montaje y mobiliario (sillas y mesas)', manual:true,
         detalle:'Instalación de montaje y mobiliario adicional: sillas y mesas extra al salón.' },
+      { id:'sal04', nombre:'Adicional por persona', manual:true,
+        detalle:'Cargo por persona sobre el aforo base cotizado inicialmente (ej. si se cotizó para 50 y ahora son 70, cantidad = 20).' },
+      { id:'sal05', nombre:'Mantelería y montaje adicional', manual:true,
+        detalle:'Mesas, manteles y montaje extra requeridos por el aumento de aforo.' },
     ]}
+  ],
+  // Normas del salón: se muestran siempre que la cotización incluya
+  // algún ítem de salón (panel y cotización imprimible). Editables
+  // desde Modo Admin > Salón.
+  normas: [
+    'Capacidad máxima 80 personas',
+    'Dejar limpio',
+    '6 horas de uso',
+    'Ruido fuerte máximo hasta las 12:00 hrs',
+    'Entrega del salón máximo 2:00 AM',
+    'Informar cuántos estacionamientos necesitan',
   ]
 }
 
