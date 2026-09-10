@@ -209,6 +209,24 @@ spa: {
       { id:'sp12', nombre:'Masaje niño', detalle:'30 min · hasta 12 años, acompañados', precio:35000, unidad:'sesión' },
     ]},
   ]
+},
+
+// ─── SALÓN Y MONTAJE ────────────────────────────────────────────
+// Ítems de precio MANUAL: no tienen un valor fijo — se escribe el
+// precio cada vez que se arma la cotización. El campo "detalle" es
+// fijo (lo que incluye el servicio) y se muestra siempre; se edita
+// desde el Modo Admin, igual que se pueden agregar o quitar ítems.
+salon: {
+  categorias: [
+    { id:'salon-eventos', nombre:'Salón de Eventos y Montaje', items:[
+      { id:'sal01', nombre:'Salón de Eventos', manual:true,
+        detalle:'Incluye: uso del salón techado, mesas y sillas básicas, baños y estacionamiento. (Edita este detalle en Modo Admin > Salón según lo que definas para cada evento).' },
+      { id:'sal02', nombre:'Servicio de mantelería', manual:true,
+        detalle:'Mantelería para las mesas del evento (cantidad y tipo a coordinar con la clienta).' },
+      { id:'sal03', nombre:'Montaje y mobiliario (sillas y mesas)', manual:true,
+        detalle:'Instalación de montaje y mobiliario adicional: sillas y mesas extra al salón.' },
+    ]}
+  ]
 }
 
 };

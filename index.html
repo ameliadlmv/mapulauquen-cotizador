@@ -276,6 +276,16 @@
     font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.84rem; color:var(--grafito);
   }
 
+  .catalog-item.manual{ align-items:flex-start; }
+  .catalog-item.manual .catalog-item-info label{ display:flex; align-items:center; gap:8px; cursor:pointer; }
+  .catalog-item.manual .catalog-item-info input[type="checkbox"]{ width:16px; height:16px; flex-shrink:0; }
+  .manual-price-input{
+    width:112px; padding:6px 7px; border:1.5px solid var(--liquen); border-radius:5px;
+    font-family:'Archivo', sans-serif; font-size:0.84rem; text-align:right; background:var(--lino); color:var(--grafito);
+  }
+  .manual-price-input:disabled{ opacity:0.4; }
+  .manual-price-input:focus{ outline:none; border-color:var(--grafito); }
+
   .precio-rango{
     background:var(--lino);
     border-radius:8px;
@@ -569,7 +579,16 @@
 
     <!-- PASO 5 -->
     <div class="panel">
-      <div class="panel-title">5 · Cliente y ajustes</div>
+      <div class="panel-title">5 · Salón y montaje <span class="count-badge" id="salon-count">0</span></div>
+      <div class="panel-body">
+        <p class="catalog-cat-nota" style="margin:-6px 0 12px">Precio manual — lo escribes tú cada vez que cotizas. No requiere seleccionar una cabaña.</p>
+        <div id="salon-body"></div>
+      </div>
+    </div>
+
+    <!-- PASO 6 -->
+    <div class="panel">
+      <div class="panel-title">6 · Cliente y ajustes</div>
       <div class="panel-body">
         <div class="form-row">
           <div class="field">
@@ -609,7 +628,7 @@
       <div id="result-container">
         <div class="empty-state">
           <div class="icon">🏔️</div>
-          <p>Selecciona una o más cabañas y las fechas para ver el desglose de precios.</p>
+          <p>Selecciona una o más cabañas, o agrega comida, spa o salón, para ver el desglose de precios.</p>
         </div>
       </div>
     </div>
@@ -644,6 +663,7 @@ const CABANAS = CONFIG.cabanas;
 const PRECIOS = CONFIG.precios;
 const COMIDA = CONFIG.comida;
 const SPA = CONFIG.spa;
+const SALON = CONFIG.salon;
 
 // ─── OVERRIDES (Modo Admin) ─────────────────────────────────
 function loadOverrides() {
@@ -659,6 +679,13 @@ function saveOverrides() {
 
 function getTemporadaReglas() {
   return (OV.temporadas && OV.temporadas.length) ? OV.temporadas : CONFIG.temporadas.reglas;
+}
+
+function getSalonCategorias() {
+  return (OV.salon && OV.salon.length) ? OV.salon : SALON.categorias;
+}
+function ensureSalonOverride() {
+  if (!OV.salon) OV.salon = JSON.parse(JSON.stringify(SALON.categorias));
 }
 
 function getCabinPrecioBase(cabId, temp) {
@@ -687,13 +714,14 @@ function setItemOverride(tipo, itemId, valor) {
 }
 
 function resetOverrides() {
-  if (!confirm('¿Restablecer todos los precios (cabañas, comida, spa y temporadas) a los valores originales del archivo? Esta acción no se puede deshacer.')) return;
+  if (!confirm('¿Restablecer todos los precios (cabañas, comida, spa, salón y temporadas) a los valores originales del archivo? Esta acción no se puede deshacer.')) return;
   OV = {};
   saveOverrides();
   renderAdminModal();
   renderCabanas();
   renderComida();
   renderSpa();
+  renderSalon();
   calcular();
 }
 
@@ -742,6 +770,7 @@ let cabanasSeleccionadas = new Set();
 let tipoTarifa = 'diario';
 let comidaQty = {};   // { itemId: qty }
 let spaQty = {};      // { itemId: qty }
+let salonSel = {};    // { itemId: {incluido, precio} } — precio manual, no viene de catálogo
 let adminMode = false;
 let adminTab = 'cabanas';
 
@@ -830,6 +859,55 @@ function updateCatalogCount(tipo, qtyState, badgeId) {
   document.getElementById(badgeId).textContent = total;
 }
 
+// ─── RENDER SALÓN (ítems de precio manual) ───────────────────
+function renderSalon() {
+  const cats = getSalonCategorias();
+  const cont = document.getElementById('salon-body');
+  cont.innerHTML = cats.map(cat => {
+    const itemsHtml = cat.items.map(it => {
+      const sel = salonSel[it.id] || { incluido: false, precio: '' };
+      return `
+        <div class="catalog-item manual">
+          <div class="catalog-item-info">
+            <label>
+              <input type="checkbox" ${sel.incluido ? 'checked' : ''} onchange="toggleSalonItem('${it.id}', this.checked)">
+              <span class="catalog-item-nombre">${it.nombre}</span>
+            </label>
+            ${it.detalle ? `<div class="catalog-item-detalle" style="margin-left:24px">${it.detalle}</div>` : ''}
+          </div>
+          <div class="catalog-item-precio">
+            <input type="number" class="manual-price-input" min="0" step="1000" placeholder="Precio $"
+              value="${sel.precio || ''}" ${sel.incluido ? '' : 'disabled'}
+              onchange="setSalonPrecio('${it.id}', this.value)">
+          </div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="catalog-cat">
+        <div class="catalog-cat-title"><span>${cat.nombre}</span></div>
+        ${itemsHtml}
+      </div>
+    `;
+  }).join('');
+  updateSalonCount();
+}
+function toggleSalonItem(itemId, incluido) {
+  if (!salonSel[itemId]) salonSel[itemId] = { incluido: false, precio: 0 };
+  salonSel[itemId].incluido = incluido;
+  renderSalon();
+  calcular();
+}
+function setSalonPrecio(itemId, valor) {
+  if (!salonSel[itemId]) salonSel[itemId] = { incluido: true, precio: 0 };
+  salonSel[itemId].precio = Math.max(0, parseFloat(valor) || 0);
+  calcular();
+}
+function updateSalonCount() {
+  const n = Object.values(salonSel).filter(s => s.incluido).length;
+  document.getElementById('salon-count').textContent = n;
+}
+
 function cambiarQty(tipo, itemId, delta) {
   const state = tipo === 'comida' ? comidaQty : spaQty;
   const nuevo = Math.max(0, (state[itemId] || 0) + delta);
@@ -860,7 +938,7 @@ function setTipo(t) {
 function calcular() {
   renderCabanas();
 
-  if (cabanasSeleccionadas.size === 0) { showEmpty(); return; }
+  const hayCabanas = cabanasSeleccionadas.size > 0;
 
   const tipoCliente = document.getElementById('tipo-cliente').value;
   const descManual = parseFloat(document.getElementById('descuento').value) || 0;
@@ -870,62 +948,78 @@ function calcular() {
   const descAuto = { normal: 0, corporativo: 10, agencia: 15, 'tercera-edad': 20 };
   const descTotal = Math.min(descManual + descAuto[tipoCliente], 30);
 
-  let noches = 0, temp = 'B', consejos = [];
+  let noches = 0, temp = null, consejos = [];
   let cabinLines = [];       // por cabaña
   let subtotalCabanas = 0;
 
   if (tipoTarifa === 'diario') {
     const fi = document.getElementById('fecha-in').value;
     const fo = document.getElementById('fecha-out').value;
-    if (!fi || !fo) { showEmpty('Selecciona las fechas de entrada y salida.'); return; }
 
-    const dateIn = new Date(fi + 'T12:00:00');
-    const dateOut = new Date(fo + 'T12:00:00');
-    noches = Math.round((dateOut - dateIn) / 86400000);
-    if (noches <= 0) { showEmpty('La fecha de salida debe ser posterior a la entrada.'); return; }
+    if (fi && fo) {
+      const dateIn = new Date(fi + 'T12:00:00');
+      const dateOut = new Date(fo + 'T12:00:00');
+      const n = Math.round((dateOut - dateIn) / 86400000);
+      if (n > 0) {
+        noches = n;
+        temp = getTemporada(dateIn);
+        document.getElementById('noches-display').textContent = noches + ' noche' + (noches > 1 ? 's' : '');
+      } else if (hayCabanas) {
+        showEmpty('La fecha de salida debe ser posterior a la entrada.'); return;
+      } else {
+        document.getElementById('noches-display').textContent = '';
+      }
+    } else if (hayCabanas) {
+      showEmpty('Selecciona las fechas de entrada y salida.'); return;
+    } else {
+      document.getElementById('noches-display').textContent = '';
+    }
 
-    document.getElementById('noches-display').textContent = noches + ' noche' + (noches > 1 ? 's' : '');
-    temp = getTemporada(dateIn);
-
-    cabanasSeleccionadas.forEach(cabId => {
-      const cab = CABANAS.find(c => c.id === cabId);
-      const { precioNoche, descDuracion } = getPrecioNoche(cabId, noches, temp);
-      const precioNocheConDesc = descDuracion > 0 ? Math.round(precioNoche * (1 - descDuracion / 100)) : precioNoche;
-      const total = precioNocheConDesc * noches;
-      subtotalCabanas += total;
-      cabinLines.push({
-        label: `${cab.icon} ${cab.nombre} — ${noches} noche${noches > 1 ? 's' : ''}${descDuracion > 0 ? ' · desc. ' + descDuracion + '%' : ''}`,
-        precioNoche: precioNocheConDesc, total
+    if (hayCabanas && noches > 0) {
+      cabanasSeleccionadas.forEach(cabId => {
+        const cab = CABANAS.find(c => c.id === cabId);
+        const { precioNoche, descDuracion } = getPrecioNoche(cabId, noches, temp);
+        const precioNocheConDesc = descDuracion > 0 ? Math.round(precioNoche * (1 - descDuracion / 100)) : precioNoche;
+        const total = precioNocheConDesc * noches;
+        subtotalCabanas += total;
+        cabinLines.push({
+          label: `${cab.icon} ${cab.nombre} — ${noches} noche${noches > 1 ? 's' : ''}${descDuracion > 0 ? ' · desc. ' + descDuracion + '%' : ''}`,
+          precioNoche: precioNocheConDesc, total
+        });
       });
-    });
-
-    if (noches < 2) consejos.push({ tipo: 'warn', icon: '💡', texto: 'Estadías de 1 noche tienen mayor costo operacional. Considera aplicar un recargo por estadía corta (15-20%) o establecer mínimo 2 noches.' });
+      if (noches < 2) consejos.push({ tipo: 'warn', icon: '💡', texto: 'Estadías de 1 noche tienen mayor costo operacional. Considera aplicar un recargo por estadía corta (15-20%) o establecer mínimo 2 noches.' });
+    }
 
   } else {
     const fm = document.getElementById('fecha-mensual').value;
     const cantM = parseInt(document.getElementById('cant-meses').value) || 1;
-    if (!fm) { showEmpty('Selecciona el mes de inicio.'); return; }
 
-    const dateM = new Date(fm + 'T12:00:00');
-    temp = getTemporada(dateM);
-    noches = cantM * 30;
+    if (fm) {
+      const dateM = new Date(fm + 'T12:00:00');
+      temp = getTemporada(dateM);
+      noches = cantM * 30;
+    } else if (hayCabanas) {
+      showEmpty('Selecciona el mes de inicio.'); return;
+    }
 
-    cabanasSeleccionadas.forEach(cabId => {
-      const cab = CABANAS.find(c => c.id === cabId);
-      const { valor: pMes } = getCabinPrecioBase(cabId, temp); // usamos override de d1 como referencia si no hay mensual propio
-      const pm = PRECIOS[cabId].mensual;
-      const ovMensual = OV.cabanasMensual && OV.cabanasMensual[cabId] && OV.cabanasMensual[cabId][temp];
-      const pMesFinal = (ovMensual !== undefined && ovMensual !== null) ? ovMensual : Math.round((pm[temp].mn + pm[temp].mx) / 2);
-      const total = pMesFinal * cantM;
-      subtotalCabanas += total;
-      cabinLines.push({
-        label: `${cab.icon} ${cab.nombre} — ${cantM} mes${cantM > 1 ? 'es' : ''}`,
-        precioNoche: Math.round(pMesFinal / 30), total
+    if (hayCabanas && fm) {
+      cabanasSeleccionadas.forEach(cabId => {
+        const cab = CABANAS.find(c => c.id === cabId);
+        const pm = PRECIOS[cabId].mensual;
+        const ovMensual = OV.cabanasMensual && OV.cabanasMensual[cabId] && OV.cabanasMensual[cabId][temp];
+        const pMesFinal = (ovMensual !== undefined && ovMensual !== null) ? ovMensual : Math.round((pm[temp].mn + pm[temp].mx) / 2);
+        const total = pMesFinal * cantM;
+        subtotalCabanas += total;
+        cabinLines.push({
+          label: `${cab.icon} ${cab.nombre} — ${cantM} mes${cantM > 1 ? 'es' : ''}`,
+          precioNoche: Math.round(pMesFinal / 30), total
+        });
       });
-    });
-
-    if (cantM >= 2) consejos.push({ tipo: 'info', icon: '💰', texto: `Para ${cantM} meses, considera ofrecer un descuento de fidelización del 5-8% para cerrar antes que el huésped compare opciones.` });
+      if (cantM >= 2) consejos.push({ tipo: 'info', icon: '💰', texto: `Para ${cantM} meses, considera ofrecer un descuento de fidelización del 5-8% para cerrar antes que el huésped compare opciones.` });
+    }
   }
+
+  if (temp === null) temp = getTemporada(fechaReferencia());
 
   // Comida
   let comidaLines = [], subtotalComida = 0;
@@ -949,30 +1043,47 @@ function calcular() {
     spaLines.push({ label: `${it.nombre} × ${qty}`, total });
   }));
 
+  // Salón (precio manual)
+  let salonLines = [], subtotalSalon = 0;
+  getSalonCategorias().forEach(cat => cat.items.forEach(it => {
+    const sel = salonSel[it.id];
+    if (!sel || !sel.incluido) return;
+    const precio = sel.precio || 0;
+    subtotalSalon += precio;
+    salonLines.push({ label: it.nombre, total: precio });
+  }));
+
+  const hayAlgo = (hayCabanas && noches > 0) || subtotalComida > 0 || subtotalSpa > 0 || subtotalSalon > 0;
+  if (!hayAlgo) { showEmpty(); return; }
+
   const costoLateCheckout = lateCheckout ? 20000 : 0;
   const descImporte = Math.round(subtotalCabanas * descTotal / 100);
-  const totalFinal = (subtotalCabanas - descImporte) + subtotalComida + subtotalSpa + costoLateCheckout;
+  const totalFinal = (subtotalCabanas - descImporte) + subtotalComida + subtotalSpa + subtotalSalon + costoLateCheckout;
 
   if (tipoCliente === 'corporativo') consejos.push({ tipo: 'info', icon: '🏢', texto: 'Clientes corporativos: considera pedir orden de compra o adelanto del 30%. Puedes emitir factura con IVA.' });
   if (tipoCliente === 'tercera-edad') consejos.push({ tipo: 'info', icon: '🌟', texto: 'Programa Vacaciones Tercera Edad (Sernatur): verifica vigencia del voucher y condiciones del convenio antes de confirmar.' });
-  if (temp === 'A' && descTotal > 10) consejos.push({ tipo: 'warn', icon: '⚠️', texto: 'Estás aplicando un descuento alto en temporada alta. Evalúa si es necesario — esta es la ventana de mayor rentabilidad del año.' });
-  if (temp === 'B' && subtotalComida === 0 && subtotalSpa === 0) consejos.push({ tipo: 'info', icon: '💡', texto: 'Temporada baja: buen momento para ofrecer comida o spa (más abajo) y así aumentar el ticket promedio sin bajar más el precio base.' });
+  if (temp === 'A' && descTotal > 10 && subtotalCabanas > 0) consejos.push({ tipo: 'warn', icon: '⚠️', texto: 'Estás aplicando un descuento alto en temporada alta. Evalúa si es necesario — esta es la ventana de mayor rentabilidad del año.' });
+  if (temp === 'B' && subtotalComida === 0 && subtotalSpa === 0 && subtotalSalon === 0) consejos.push({ tipo: 'info', icon: '💡', texto: 'Temporada baja: buen momento para ofrecer comida, spa o el salón (más abajo) y así aumentar el ticket promedio sin bajar más el precio base.' });
   if (cabanasSeleccionadas.size > 1) consejos.push({ tipo: 'info', icon: '🏘️', texto: `Cotización para ${cabanasSeleccionadas.size} cabañas en el mismo período. Confirma disponibilidad simultánea antes de enviar.` });
 
   const tempClass = { 'B': 'temp-baja', 'M': 'temp-media', 'A': 'temp-alta' }[temp];
 
-  let cabinHTML = cabinLines.map(b => `
+  let cabinHTML = cabinLines.length ? `<div class="res-group-title">Cabañas</div>` + cabinLines.map(b => `
     <div class="tramo">
       <span>${b.label}</span>
       <span>${fmt(b.total)}</span>
     </div>
-  `).join('');
+  `).join('') : '';
 
   let comidaHTML = comidaLines.length ? `<div class="res-group-title">Comida</div>` + comidaLines.map(b => `
     <div class="tramo"><span>${b.label}</span><span>${fmt(b.total)}</span></div>
   `).join('') : '';
 
   let spaHTML = spaLines.length ? `<div class="res-group-title">Spa</div>` + spaLines.map(b => `
+    <div class="tramo"><span>${b.label}</span><span>${fmt(b.total)}</span></div>
+  `).join('') : '';
+
+  let salonHTML = salonLines.length ? `<div class="res-group-title">Salón y montaje</div>` + salonLines.map(b => `
     <div class="tramo"><span>${b.label}</span><span>${fmt(b.total)}</span></div>
   `).join('') : '';
 
@@ -993,9 +1104,11 @@ function calcular() {
   var lateHtml = lateCheckout
     ? '<div class="res-line"><span class="label">Late check-out</span><span class="value">' + fmt(costoLateCheckout) + '</span></div>'
     : '';
-  var totLbl = tipoTarifa === 'mensual'
-    ? (noches / 30) + ' mes' + (noches > 30 ? 'es' : '')
-    : noches + ' noche' + (noches > 1 ? 's' : '');
+  var totLbl = noches === 0
+    ? 'servicios'
+    : (tipoTarifa === 'mensual'
+      ? (noches / 30) + ' mes' + (noches > 30 ? 'es' : '')
+      : noches + ' noche' + (noches > 1 ? 's' : ''));
   var consejosWrap = consejosHTML ? '<div class="consejos">' + consejosHTML + '</div>' : '';
   var clienteHtml = nombre
     ? '<div class="info-cliente"><h4>Cliente</h4><div style="font-size:0.86rem;color:var(--grafito)">'
@@ -1008,23 +1121,26 @@ function calcular() {
     + '</svg>';
 
   const nombresCabanas = Array.from(cabanasSeleccionadas).map(id => CABANAS.find(c => c.id === id));
-  const tituloCab = nombresCabanas.length === 1 ? nombresCabanas[0].nombre : nombresCabanas.length + ' cabañas';
+  const tituloCab = nombresCabanas.length === 0
+    ? 'Cotización de servicios'
+    : (nombresCabanas.length === 1 ? nombresCabanas[0].nombre : nombresCabanas.length + ' cabañas');
 
   document.getElementById('result-container').innerHTML =
     '<div class="res-header">'
     + '<h2>' + tituloCab + ' <span class="temp-indicator ' + tempClass + '">' + tempLabel(temp) + '</span></h2>'
-    + '<div class="res-cabana">' + nombresCabanas.map(c => c.nombre).join(' · ') + '</div>'
+    + (nombresCabanas.length ? '<div class="res-cabana">' + nombresCabanas.map(c => c.nombre).join(' · ') + '</div>' : '')
     + '</div>'
     + '<div class="res-body">'
-    + '<div class="res-group-title">Cabañas</div>'
     + cabinHTML
     + comidaHTML
     + spaHTML
+    + salonHTML
     + '<div style="margin-top:10px">'
-    + '<div class="res-line"><span class="label">Subtotal cabañas</span><span class="value">' + fmt(subtotalCabanas) + '</span></div>'
+    + (subtotalCabanas > 0 ? '<div class="res-line"><span class="label">Subtotal cabañas</span><span class="value">' + fmt(subtotalCabanas) + '</span></div>' : '')
     + descHtml
     + (subtotalComida > 0 ? '<div class="res-line"><span class="label">Subtotal comida</span><span class="value">' + fmt(subtotalComida) + '</span></div>' : '')
     + (subtotalSpa > 0 ? '<div class="res-line"><span class="label">Subtotal spa</span><span class="value">' + fmt(subtotalSpa) + '</span></div>' : '')
+    + (subtotalSalon > 0 ? '<div class="res-line"><span class="label">Subtotal salón</span><span class="value">' + fmt(subtotalSalon) + '</span></div>' : '')
     + lateHtml
     + '</div>'
     + '</div>'
@@ -1043,8 +1159,8 @@ function calcular() {
     + clienteHtml;
 
   window.__ultimaCotizacion = {
-    nombresCabanas, cabinLines, comidaLines, spaLines, tipoCliente, nombre, descTotal, descImporte,
-    noches, temp, subtotalCabanas, subtotalComida, subtotalSpa, costoLateCheckout, totalFinal, totLbl, tipoTarifa
+    nombresCabanas, cabinLines, comidaLines, spaLines, salonLines, tipoCliente, nombre, descTotal, descImporte,
+    noches, temp, subtotalCabanas, subtotalComida, subtotalSpa, subtotalSalon, costoLateCheckout, totalFinal, totLbl, tipoTarifa
   };
 }
 
@@ -1070,7 +1186,7 @@ function getNumeroCotizacion() {
 function generarCotizacion() {
   const st = window.__ultimaCotizacion;
   if (!st) return;
-  const { nombresCabanas, cabinLines, comidaLines, spaLines, tipoCliente, nombre, descTotal, descImporte, noches, temp, subtotalCabanas, subtotalComida, subtotalSpa, costoLateCheckout, totalFinal, totLbl, tipoTarifa } = st;
+  const { nombresCabanas, cabinLines, comidaLines, spaLines, salonLines, tipoCliente, nombre, descTotal, descImporte, noches, temp, subtotalCabanas, subtotalComida, subtotalSpa, subtotalSalon, costoLateCheckout, totalFinal, totLbl, tipoTarifa } = st;
 
   const adultos = parseInt(document.getElementById('adultos').value) || 2;
   const ninos = parseInt(document.getElementById('ninos').value) || 0;
@@ -1090,6 +1206,7 @@ function generarCotizacion() {
   const filasCab = nombresCabanas.map((c, i) => `<tr><td>${c.icon} ${c.nombre}</td><td>${c.dorms} dorm · ${c.banos} baño${c.banos > 1 ? 's' : ''} · hasta ${c.ocup} pax</td><td>${cabinLines[i] ? fmt(cabinLines[i].total) : ''}</td></tr>`).join('');
   const filasComida = comidaLines.map(l => `<tr><td colspan="2">🍽️ ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
   const filasSpa = spaLines.map(l => `<tr><td colspan="2">💆 ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
+  const filasSalon = salonLines.map(l => `<tr><td colspan="2">🎪 ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
 
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html>
@@ -1181,16 +1298,18 @@ table.items td{border-bottom:1px solid var(--arena);padding:7px 9px;}
     ${filasCab}
     ${filasComida}
     ${filasSpa}
+    ${filasSalon}
   </table>
 
   <div class="totales">
     <table>
-      <tr><td>Período</td><td>${tipoTarifa === 'diario' ? fmtFecha(fechaInVal) + ' — ' + fmtFecha(fechaOutVal) : fmtFecha(fechaInVal) + ' (' + totLbl + ')'}</td></tr>
+      ${fechaInVal ? '<tr><td>Período</td><td>' + (tipoTarifa === 'diario' ? fmtFecha(fechaInVal) + ' — ' + fmtFecha(fechaOutVal) : fmtFecha(fechaInVal) + ' (' + totLbl + ')') + '</td></tr>' : ''}
       <tr><td>Temporada</td><td>${tempLabel(temp)}</td></tr>
-      <tr><td>Subtotal cabañas (${totLbl})</td><td>${fmt(subtotalCabanas)}</td></tr>
-      ${descTotal > 0 ? '<tr><td>Descuento ' + descTotal + '% (cabañas)</td><td>-' + fmt(descImporte) + '</td></tr>' : ''}
+      ${subtotalCabanas > 0 ? '<tr><td>Subtotal cabañas (' + totLbl + ')</td><td>' + fmt(subtotalCabanas) + '</td></tr>' : ''}
+      ${descTotal > 0 && subtotalCabanas > 0 ? '<tr><td>Descuento ' + descTotal + '% (cabañas)</td><td>-' + fmt(descImporte) + '</td></tr>' : ''}
       ${subtotalComida > 0 ? '<tr><td>Subtotal comida</td><td>' + fmt(subtotalComida) + '</td></tr>' : ''}
       ${subtotalSpa > 0 ? '<tr><td>Subtotal spa</td><td>' + fmt(subtotalSpa) + '</td></tr>' : ''}
+      ${subtotalSalon > 0 ? '<tr><td>Subtotal salón y montaje</td><td>' + fmt(subtotalSalon) + '</td></tr>' : ''}
       ${costoLateCheckout > 0 ? '<tr><td>Late check-out</td><td>' + fmt(costoLateCheckout) + '</td></tr>' : ''}
       <tr><td>Monto afecto (neto)</td><td>${fmt(afecto)}</td></tr>
       <tr><td>IVA (19%)</td><td>${fmt(iva)}</td></tr>
@@ -1222,19 +1341,22 @@ table.items td{border-bottom:1px solid var(--arena);padding:7px 9px;}
 function copiarResumen() {
   const st = window.__ultimaCotizacion;
   if (!st) return;
-  const { nombresCabanas, nombre, temp, totalFinal, totLbl, tipoTarifa, subtotalComida, subtotalSpa } = st;
+  const { nombresCabanas, nombre, temp, totalFinal, totLbl, tipoTarifa, subtotalComida, subtotalSpa, subtotalSalon } = st;
   const fechaInVal = tipoTarifa === 'diario' ? document.getElementById('fecha-in').value : document.getElementById('fecha-mensual').value;
   const fechaOutVal = tipoTarifa === 'diario' ? document.getElementById('fecha-out').value : '';
   const fmtFecha = s => s ? s.split('-').reverse().join('/') : '—';
 
   const texto = `MAPULAUQUEN · Cotización\n`
-    + `Cabañas: ${nombresCabanas.map(c => c.nombre).join(', ')}\n`
-    + (tipoTarifa === 'diario'
-      ? `Fechas: ${fmtFecha(fechaInVal)} — ${fmtFecha(fechaOutVal)} (${totLbl})\n`
-      : `Inicio: ${fmtFecha(fechaInVal)} (${totLbl})\n`)
+    + (nombresCabanas.length ? `Cabañas: ${nombresCabanas.map(c => c.nombre).join(', ')}\n` : '')
+    + (fechaInVal
+      ? (tipoTarifa === 'diario'
+        ? `Fechas: ${fmtFecha(fechaInVal)} — ${fmtFecha(fechaOutVal)} (${totLbl})\n`
+        : `Inicio: ${fmtFecha(fechaInVal)} (${totLbl})\n`)
+      : '')
     + `Temporada: ${tempLabel(temp)}\n`
     + (subtotalComida > 0 ? `Incluye comida: ${fmt(subtotalComida)}\n` : '')
     + (subtotalSpa > 0 ? `Incluye spa: ${fmt(subtotalSpa)}\n` : '')
+    + (subtotalSalon > 0 ? `Incluye salón y montaje: ${fmt(subtotalSalon)}\n` : '')
     + (nombre ? `Cliente: ${nombre}\n` : '')
     + `Total: ${fmt(totalFinal)}`;
 
@@ -1255,10 +1377,12 @@ function enviarWhatsApp() {
   const fmtFecha = s => s ? s.split('-').reverse().join('/') : '—';
 
   const texto = `Hola! Quisiera consultar disponibilidad en Mapulauquen.\n`
-    + `Cabaña(s): ${nombresCabanas.map(c => c.nombre).join(', ')}\n`
-    + (tipoTarifa === 'diario'
-      ? `Fechas: ${fmtFecha(fechaInVal)} - ${fmtFecha(fechaOutVal)}\n`
-      : `Inicio: ${fmtFecha(fechaInVal)} (${totLbl})\n`)
+    + (nombresCabanas.length ? `Cabaña(s): ${nombresCabanas.map(c => c.nombre).join(', ')}\n` : '')
+    + (fechaInVal
+      ? (tipoTarifa === 'diario'
+        ? `Fechas: ${fmtFecha(fechaInVal)} - ${fmtFecha(fechaOutVal)}\n`
+        : `Inicio: ${fmtFecha(fechaInVal)} (${totLbl})\n`)
+      : '')
     + (nombre ? `Nombre: ${nombre}\n` : '')
     + `Total estimado: ${fmt(totalFinal)}`;
 
@@ -1279,7 +1403,7 @@ function toggleAdmin() {
     adminMode = false;
     document.getElementById('admin-overlay').hidden = true;
     updateAdminButton();
-    renderCabanas(); renderComida(); renderSpa(); calcular();
+    renderCabanas(); renderComida(); renderSpa(); renderSalon(); calcular();
     return;
   }
   const pw = prompt('Clave de acceso al Modo Admin:');
@@ -1289,7 +1413,7 @@ function toggleAdmin() {
     updateAdminButton();
     document.getElementById('admin-overlay').hidden = false;
     renderAdminModal();
-    renderCabanas(); renderComida(); renderSpa(); calcular();
+    renderCabanas(); renderComida(); renderSpa(); renderSalon(); calcular();
   } else {
     alert('Clave incorrecta.');
   }
@@ -1302,6 +1426,7 @@ function renderAdminModal() {
     { id: 'cabanas', label: 'Cabañas' },
     { id: 'comida', label: 'Comida' },
     { id: 'spa', label: 'Spa' },
+    { id: 'salon', label: 'Salón' },
     { id: 'temporadas', label: 'Temporadas' },
   ];
   document.getElementById('admin-tabs').innerHTML = tabs.map(t =>
@@ -1312,6 +1437,7 @@ function renderAdminModal() {
   if (adminTab === 'cabanas') body.innerHTML = renderAdminCabanas();
   else if (adminTab === 'comida') body.innerHTML = renderAdminCatalogo('comida', COMIDA);
   else if (adminTab === 'spa') body.innerHTML = renderAdminCatalogo('spa', SPA);
+  else if (adminTab === 'salon') body.innerHTML = renderAdminSalon();
   else if (adminTab === 'temporadas') body.innerHTML = renderAdminTemporadas();
 }
 
@@ -1348,6 +1474,49 @@ function renderAdminCatalogo(tipo, catalogo) {
     return `<span class="admin-cat-label">${cat.nombre}</span><table class="admin-table"><tr><th>Ítem</th><th>Precio</th></tr>${rows}</table>`;
   }).join('');
   return `<p class="admin-note">Los cambios se guardan automáticamente en este navegador.</p>${secciones}`;
+}
+
+function renderAdminSalon() {
+  const cats = getSalonCategorias();
+  const secciones = cats.map((cat, ci) => {
+    const rows = cat.items.map((it, ii) => `
+      <tr>
+        <td><input type="text" value="${it.nombre}" onchange="editSalonItem(${ci},${ii},'nombre',this.value)"></td>
+        <td><textarea rows="2" style="width:100%;font-family:inherit;font-size:0.75rem;padding:5px;border:1px solid var(--piedra);border-radius:5px;box-sizing:border-box" onchange="editSalonItem(${ci},${ii},'detalle',this.value)">${it.detalle || ''}</textarea></td>
+        <td><button class="admin-mini-btn" onclick="eliminarSalonItem(${ci},${ii})" type="button">Eliminar</button></td>
+      </tr>`).join('');
+    return `<span class="admin-cat-label">${cat.nombre}</span>
+      <table class="admin-table">
+        <tr><th>Nombre</th><th>Detalle (lo que incluye)</th><th></th></tr>
+        ${rows}
+      </table>
+      <div style="margin-top:8px;margin-bottom:16px">
+        <button class="admin-mini-btn" onclick="agregarSalonItem(${ci})" type="button">+ Agregar ítem</button>
+      </div>`;
+  }).join('');
+  return `<p class="admin-note">Estos servicios tienen precio manual: se escribe cada vez que armas la cotización, según lo que corresponda a ese evento. Aquí editas el nombre y el detalle (lo que incluye) de cada uno.</p>${secciones}`;
+}
+function editSalonItem(ci, ii, campo, valor) {
+  ensureSalonOverride();
+  OV.salon[ci].items[ii][campo] = valor;
+  saveOverrides();
+  renderSalon(); calcular();
+}
+function agregarSalonItem(ci) {
+  ensureSalonOverride();
+  OV.salon[ci].items.push({ id: 'sal-custom-' + Date.now(), nombre: 'Nuevo servicio', manual: true, detalle: '' });
+  saveOverrides();
+  renderAdminModal();
+  renderSalon(); calcular();
+}
+function eliminarSalonItem(ci, ii) {
+  ensureSalonOverride();
+  const removedId = OV.salon[ci].items[ii].id;
+  OV.salon[ci].items.splice(ii, 1);
+  delete salonSel[removedId];
+  saveOverrides();
+  renderAdminModal();
+  renderSalon(); calcular();
 }
 
 function renderAdminTemporadas() {
@@ -1427,6 +1596,8 @@ function exportPreciosJs() {
     ...cat, items: cat.items.map(it => ({ ...it, precio: getItemPrecio(SPA, 'spa', it.id, it.precio) }))
   })), null, 2);
 
+  const salonOut = JSON.stringify(getSalonCategorias(), null, 2);
+
   const temporadasOut = JSON.stringify(getTemporadaReglas(), null, 2);
 
   const contenido = `// ═══════════════════════════════════════════════════════════════
@@ -1457,6 +1628,10 @@ comida: {
 
 spa: {
   categorias: ${spaOut}
+},
+
+salon: {
+  categorias: ${salonOut}
 }
 
 };
@@ -1477,6 +1652,7 @@ spa: {
 renderCabanas();
 renderComida();
 renderSpa();
+renderSalon();
 </script>
 
 </body>
