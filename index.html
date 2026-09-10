@@ -1250,13 +1250,28 @@ function generarCotizacion() {
   const filasCab = nombresCabanas.map((c, i) => `<tr><td>${c.icon} ${c.nombre}</td><td>${c.dorms} dorm · ${c.banos} baño${c.banos > 1 ? 's' : ''} · hasta ${c.ocup} pax</td><td>${cabinLines[i] ? fmt(cabinLines[i].total) : ''}</td></tr>`).join('');
   const filasComida = comidaLines.map(l => `<tr><td colspan="2">🍽️ ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
   const filasSpa = spaLines.map(l => `<tr><td colspan="2">💆 ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
-  const filasSalon = salonLines.map(l => `<tr><td colspan="2">🎪 ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
+  const filasSalon = salonLines.map(l => `<tr><td colspan="2">${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
   const normasSalon = getSalonNormas();
   const normasSalonHtml = (subtotalSalon > 0 && normasSalon.length) ? `
   <div class="obs-box">
     <h4>Normas del salón</h4>
     <ol>${normasSalon.map(n => `<li>${n}</li>`).join('')}</ol>
   </div>` : '';
+
+  // Condiciones: solo se muestran las que aplican a lo que realmente
+  // se está cotizando (las de cabañas no aplican a una cotización de
+  // solo salón/comida/spa, y viceversa).
+  const condiciones = [
+    'Cotización válida por 7 días desde la fecha de emisión.',
+    'Precios sujetos a disponibilidad al momento de confirmar la reserva.',
+  ];
+  if (subtotalCabanas > 0) {
+    condiciones.push('Para reservar se requiere abono del 50% del valor total.');
+    condiciones.push('Check-in 16:00 hrs · Check-out 11:00 hrs, salvo acuerdo previo.');
+  }
+  if (subtotalComida > 0 || subtotalSpa > 0) {
+    condiciones.push('Comida y spa se coordinan según menú elegido, fechas y N° de personas.');
+  }
 
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html>
@@ -1369,13 +1384,7 @@ table.items td{border-bottom:1px solid var(--arena);padding:7px 9px;}
 
   <div class="obs-box">
     <h4>Condiciones</h4>
-    <ol>
-      <li>Cotización válida por 7 días desde la fecha de emisión.</li>
-      <li>Precios sujetos a disponibilidad al momento de confirmar la reserva.</li>
-      <li>Para reservar se requiere abono del 50% del valor total.</li>
-      <li>Check-in 16:00 hrs · Check-out 11:00 hrs, salvo acuerdo previo.</li>
-      <li>Comida y spa se coordinan según menú elegido, fechas y N° de personas.</li>
-    </ol>
+    <ol>${condiciones.map(c => `<li>${c}</li>`).join('')}</ol>
   </div>
   ${normasSalonHtml}
 

@@ -239,11 +239,12 @@ salon: {
   // desde Modo Admin > Salón.
   normas: [
     'Capacidad máxima 80 personas',
-    'Dejar limpio',
+    'El salón se debe dejar en las condiciones en las que fue entregado',
     '6 horas de uso',
     'Ruido fuerte máximo hasta las 12:00 hrs',
     'Entrega del salón máximo 2:00 AM',
     'Informar cuántos estacionamientos necesitan',
+    'Ante daños se podrán aplicar cargos adicionales',
   ]
 }
 
