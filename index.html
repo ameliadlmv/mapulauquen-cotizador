@@ -703,7 +703,7 @@
   </div>
 </div>
 
-<script src="precios.js?v=20260928-carta-neta-2"></script>
+<script src="precios.js?v=20260928-almuerzo-modalidades"></script>
 <script>
 const CONFIG = window.MP_CONFIG;
 const CABANAS = CONFIG.cabanas;
@@ -778,7 +778,7 @@ function generarCartaComidasPDF() {
         : Math.round(getItemPrecio(COMIDA, 'comida', it.id, it.precio) / 1.19);
       return `<tr><td>${escapeHtml(it.nombre)}</td><td>${escapeHtml(it.detalle || '')}</td><td class="price">${fmt(ventaNeta)}</td></tr>`;
     }).join('');
-    return `<tr class="category"><th colspan="3">${escapeHtml(cat.nombre)}</th></tr>${items}`;
+    return `<tr class="category"><th colspan="3">${escapeHtml(cat.nombre)}</th></tr>${cat.nota ? `<tr class="category-note"><td colspan="3">${escapeHtml(cat.nota)}</td></tr>` : ''}${items}`;
   }).join('');
   const win = window.open('', '_blank');
   if (!win) { alert('Permite las ventanas emergentes para abrir la carta.'); return; }
@@ -788,7 +788,7 @@ function generarCartaComidasPDF() {
     .toolbar{background:#eee;text-align:center;padding:12px}.toolbar button{background:#2E2A35;color:white;border:0;border-radius:5px;padding:10px 22px;cursor:pointer}
     main{max-width:850px;margin:25px auto;padding:0 20px}header{display:flex;align-items:center;gap:18px;border-bottom:2px solid #2E2A35;padding-bottom:15px}
     header img{width:58px;height:auto}h1{font-size:19px;margin:0 0 4px}header p{margin:0;color:#666}table{width:100%;border-collapse:collapse;margin-top:18px}
-    th,td{text-align:left;padding:7px 8px;border-bottom:1px solid #ddd;vertical-align:top}.category th{background:#2E2A35;color:white;text-transform:uppercase;letter-spacing:.04em;padding:8px}
+    th,td{text-align:left;padding:7px 8px;border-bottom:1px solid #ddd;vertical-align:top}.category th{background:#2E2A35;color:white;text-transform:uppercase;letter-spacing:.04em;padding:8px}.category-note td{font-size:11px;line-height:1.5;color:#555;background:#f6f4f1}
     .price{text-align:right;white-space:nowrap;font-weight:bold}thead th:last-child{text-align:right}tr{break-inside:avoid}footer{margin:18px 0;color:#555;line-height:1.5}
     @media print{.toolbar{display:none}main{margin:0;padding:0}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
   </style></head><body><div class="toolbar"><button onclick="window.print()">Descargar / Imprimir PDF</button> Elige «Guardar como PDF» en el diálogo de impresión.</div>
@@ -985,7 +985,8 @@ function renderCatalogo(tipo, catalogo, containerId, qtyState) {
     }).join('');
     return `
       <div class="catalog-cat">
-        <div class="catalog-cat-title"><span>${cat.nombre}</span>${cat.nota ? `<span class="catalog-cat-nota">${cat.nota}</span>` : ''}</div>
+        <div class="catalog-cat-title"><span>${cat.nombre}</span></div>
+        ${cat.nota ? `<p class="catalog-cat-nota" style="padding:8px 12px;line-height:1.5">${cat.nota}</p>` : ''}
         ${itemsHtml}
       </div>
     `;

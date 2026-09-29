@@ -427,8 +427,8 @@ comida: {
       "items": [
         {
           "id": "ev33",
-          "nombre": "Montaje, traslado y ayudante",
-          "detalle": "servicio · Sin vajilla ni bebestibles",
+          "nombre": "Montaje, traslado y ayudante *",
+          "detalle": "Servicio · Valor estimado inicial, sin vajilla ni bebestibles. Se confirma según tipo de evento, horario, cantidad de personas y personal requerido.",
           "precio": 314160,
           "unidad": "servicio"
         }
@@ -546,39 +546,40 @@ comida: {
     {
       "id": "cat12",
       "nombre": "Almuerzo",
+      "nota": "* Modalidades de entrega: 1) En bandejas, con las cantidades solicitadas para autoservicio. 2) En empaques individuales, con cargo adicional por empaque. 3) En bandejas con servicio de atención contratado por separado. La modalidad y sus adicionales se confirman en la cotización.",
       "items": [
         {
           "id": "ev48",
           "nombre": "Pollo a la plancha, arroz o papas doradas y ensalada de repollo y palta",
-          "detalle": "por persona · Empaque para entrega caliente se cotiza por separado",
+          "detalle": "por persona *",
           "precio": 13566,
           "unidad": "por persona"
         },
         {
           "id": "ev49",
           "nombre": "Pastel de papas con ensalada chilena",
-          "detalle": "por persona · Empaque para entrega caliente se cotiza por separado",
+          "detalle": "por persona *",
           "precio": 13566,
           "unidad": "por persona"
         },
         {
           "id": "ev50",
           "nombre": "Budín de verduras con papas doradas",
-          "detalle": "por persona · Empaque para entrega caliente se cotiza por separado",
+          "detalle": "por persona *",
           "precio": 11424,
           "unidad": "por persona"
         },
         {
           "id": "ev51",
           "nombre": "Hamburguesa de soya con puré y ensalada",
-          "detalle": "por persona · Empaque para entrega caliente se cotiza por separado",
+          "detalle": "por persona *",
           "precio": 12138,
           "unidad": "por persona"
         },
         {
           "id": "ev52",
           "nombre": "Tortilla de verduras con arroz y ensalada",
-          "detalle": "por persona · Empaque para entrega caliente se cotiza por separado",
+          "detalle": "por persona *",
           "precio": 11424,
           "unidad": "por persona"
         }
