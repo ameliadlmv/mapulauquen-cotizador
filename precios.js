@@ -680,7 +680,7 @@ salon: {
   categorias: [
     { id:'salon-eventos', nombre:'Salón de Eventos y Montaje', items:[
       { id:'sal01', nombre:'Salón de Eventos', manual:true,
-        detalle:'Incluye: uso del salón techado, mesas y sillas básicas, baños y estacionamiento. (Edita este detalle en Modo Admin > Salón según lo que definas para cada evento).' },
+        detalle:'Incluye 6 horas de uso del salón techado, baños, mobiliario y vajilla disponibles para hasta 30 personas. Estacionamientos sujetos a coordinación previa.' },
       { id:'sal02', nombre:'Servicio de mantelería', manual:true,
         detalle:'Mantelería para las mesas del evento (cantidad y tipo a coordinar con la clienta).' },
       { id:'sal03', nombre:'Montaje y mobiliario (sillas y mesas)', manual:true,

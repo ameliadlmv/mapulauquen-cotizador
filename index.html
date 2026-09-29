@@ -624,6 +624,7 @@
         <div class="catalog-cat" style="margin-top:22px">
           <div class="catalog-cat-title"><span>Comidas para eventos</span><span class="count-badge" id="comida-count">0</span></div>
           <p class="catalog-cat-nota">Precio de venta calculado desde el costo neto de Carolina y el recargo definido en Admin. Los valores mostrados incluyen IVA.</p>
+          <button class="btn btn-secondary" type="button" onclick="generarCartaComidasPDF()" style="margin:0 0 14px">📄 Carta de comidas · PDF con precios netos</button>
           <div id="comida-body"></div>
         </div>
       </div>
@@ -702,7 +703,7 @@
   </div>
 </div>
 
-<script src="precios.js?v=20260928-condiciones-salon"></script>
+<script src="precios.js?v=20260928-carta-neta"></script>
 <script>
 const CONFIG = window.MP_CONFIG;
 const CABANAS = CONFIG.cabanas;
@@ -769,6 +770,33 @@ function getItemPrecio(catalogo, tipo, itemId, defaultPrecio) {
   return (ov !== undefined && ov !== null) ? ov : defaultPrecio;
 }
 function getFoodMarkup() { return OV.foodMarkup ?? COMIDA.recargo ?? 20; }
+function generarCartaComidasPDF() {
+  const filas = COMIDA.categorias.map(cat => {
+    const items = cat.items.map(it => {
+      const ventaNeta = OV.comida?.[it.id] !== undefined
+        ? Math.round(OV.comida[it.id] * (1 + getFoodMarkup() / 100))
+        : Math.round(getItemPrecio(COMIDA, 'comida', it.id, it.precio) / 1.19);
+      return `<tr><td>${escapeHtml(it.nombre)}</td><td>${escapeHtml(it.detalle || '')}</td><td class="price">${fmt(ventaNeta)}</td></tr>`;
+    }).join('');
+    return `<tr class="category"><th colspan="3">${escapeHtml(cat.nombre)}</th></tr>${items}`;
+  }).join('');
+  const win = window.open('', '_blank');
+  if (!win) { alert('Permite las ventanas emergentes para abrir la carta.'); return; }
+  win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Carta de comidas · Mapulauquen</title>
+  <style>
+    @page{size:A4;margin:17mm 16mm}*{box-sizing:border-box}body{font:12px Arial,sans-serif;color:#2E2A35;margin:0;background:#fff}
+    .toolbar{background:#eee;text-align:center;padding:12px}.toolbar button{background:#2E2A35;color:white;border:0;border-radius:5px;padding:10px 22px;cursor:pointer}
+    main{max-width:850px;margin:25px auto;padding:0 20px}header{display:flex;align-items:center;gap:18px;border-bottom:2px solid #2E2A35;padding-bottom:15px}
+    header img{width:58px;height:auto}h1{font-size:19px;margin:0 0 4px}header p{margin:0;color:#666}table{width:100%;border-collapse:collapse;margin-top:18px}
+    th,td{text-align:left;padding:7px 8px;border-bottom:1px solid #ddd;vertical-align:top}.category th{background:#2E2A35;color:white;text-transform:uppercase;letter-spacing:.04em;padding:8px}
+    .price{text-align:right;white-space:nowrap;font-weight:bold}thead th:last-child{text-align:right}tr{break-inside:avoid}footer{margin:18px 0;color:#555;line-height:1.5}
+    @media print{.toolbar{display:none}main{margin:0;padding:0}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  </style></head><body><div class="toolbar"><button onclick="window.print()">Descargar / Imprimir PDF</button> Elige «Guardar como PDF» en el diálogo de impresión.</div>
+  <main><header><img src="${location.origin + location.pathname.replace(/[^/]*$/, '')}mapulauquen-logo-pizarra.png" alt="Mapulauquen"><div><h1>MAPULAUQUEN · EVENTOS</h1><p>Carta de comidas · precios de venta netos</p></div></header>
+  <table><thead><tr><th>Preparación</th><th>Unidad / detalle</th><th>Precio neto</th></tr></thead><tbody>${filas}</tbody></table>
+  <footer>Valores netos en pesos chilenos. IVA se agrega en la cotización final. Servicio sujeto a disponibilidad y coordinación de menú, fecha y número de personas.</footer></main></body></html>`);
+  win.document.close();
+}
 async function importarCostosCarolina(input) {
   const file = input.files?.[0];
   if (!file) return;
