@@ -114,6 +114,10 @@
     overflow:hidden;
   }
   .panel + .panel{ margin-top:20px; }
+  .quote-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .quote-tab{border:1px solid var(--piedra);background:var(--hueso);color:var(--grafito);border-radius:8px;padding:10px 14px;cursor:pointer;font:600 0.82rem 'Space Grotesk',sans-serif;}
+  .quote-tab.active{background:var(--grafito);border-color:var(--grafito);color:var(--hueso);}
+  .quote-section[hidden]{display:none;}
   .panel-title{
     background:var(--grafito);
     color:var(--hueso);
@@ -514,9 +518,16 @@
 <main>
   <!-- COLUMNA IZQUIERDA -->
   <div>
+    <nav class="quote-tabs" aria-label="Secciones del cotizador">
+      <button class="quote-tab active" data-section="cabanas" onclick="setQuoteSection('cabanas')" type="button">1 · Cabañas</button>
+      <button class="quote-tab" data-section="spa" onclick="setQuoteSection('spa')" type="button">2 · Spa</button>
+      <button class="quote-tab" data-section="eventos" onclick="setQuoteSection('eventos')" type="button">3 · Salón de eventos</button>
+      <button class="quote-tab" data-section="cliente" onclick="setQuoteSection('cliente')" type="button">4 · Cliente y resumen</button>
+    </nav>
+    <div class="quote-section" id="section-cabanas">
     <!-- PASO 1 -->
     <div class="panel">
-      <div class="panel-title">1 · Tipo de estadía</div>
+      <div class="panel-title">Tipo de estadía</div>
       <div class="panel-body">
         <div class="tipo-tabs">
           <button class="tipo-tab active" onclick="setTipo('diario')" id="tab-diario" type="button">Por noches</button>
@@ -577,37 +588,52 @@
 
     <!-- PASO 2 -->
     <div class="panel">
-      <div class="panel-title">2 · Cabañas <span class="count-badge" id="cabanas-count">0 seleccionadas</span></div>
+      <div class="panel-title">Cabañas <span class="count-badge" id="cabanas-count">0 seleccionadas</span></div>
       <div class="panel-body">
         <p class="catalog-cat-nota" style="margin:-6px 0 12px">Puedes seleccionar más de una cabaña — se cotizan todas para el mismo período.</p>
         <div class="cabanas-grid" id="cabanas-grid"></div>
       </div>
     </div>
 
-    <!-- PASO 3 -->
-    <div class="panel">
-      <div class="panel-title">3 · Servicios de comida <span class="count-badge" id="comida-count">0</span></div>
-      <div class="panel-body" id="comida-body"></div>
     </div>
-
-    <!-- PASO 4 -->
+    <!-- PASO 3 -->
+    <div class="quote-section" id="section-spa" hidden>
     <div class="panel">
-      <div class="panel-title">4 · Servicios de spa <span class="count-badge" id="spa-count">0</span></div>
+      <div class="panel-title">Servicios de spa <span class="count-badge" id="spa-count">0</span></div>
       <div class="panel-body" id="spa-body"></div>
     </div>
 
-    <!-- PASO 5 -->
+    </div>
+    <!-- PASO 4 -->
+    <div class="quote-section" id="section-eventos" hidden>
     <div class="panel">
-      <div class="panel-title">5 · Salón y montaje <span class="count-badge" id="salon-count">0</span></div>
+      <div class="panel-title">Salón de eventos <span class="count-badge" id="salon-count">0</span></div>
       <div class="panel-body">
-        <p class="catalog-cat-nota" style="margin:-6px 0 12px">Precio manual — lo escribes tú cada vez que cotizas. No requiere seleccionar una cabaña.</p>
+        <p class="catalog-cat-nota" style="margin:-6px 0 12px">Agrega arriendo, montaje y comidas según el evento. Puedes cotizar sin cabañas.</p>
+        <div class="form-row">
+          <div class="field"><label>Fecha del evento</label><input type="date" id="fecha-evento" onchange="calcular()"></div>
+          <div class="field"><label>Asistentes</label><input type="number" id="asistentes-evento" min="0" max="500" placeholder="Cantidad" onchange="calcular()"></div>
+        </div>
         <div id="salon-body"></div>
+        <div class="catalog-cat" style="margin-top:22px">
+          <div class="catalog-cat-title"><span>Ítem puntual del evento</span></div>
+          <p class="catalog-cat-nota">Escribe cualquier servicio o gasto especial. Puedes agregar varias líneas.</p>
+          <div id="extras-evento-body"></div>
+          <button class="admin-mini-btn" type="button" onclick="agregarExtraEvento()">+ Agregar ítem libre</button>
+        </div>
+        <div class="catalog-cat" style="margin-top:22px">
+          <div class="catalog-cat-title"><span>Comidas para eventos</span><span class="count-badge" id="comida-count">0</span></div>
+          <p class="catalog-cat-nota">Precio de venta calculado desde el costo neto de Carolina y el recargo definido en Admin. Los valores mostrados incluyen IVA.</p>
+          <div id="comida-body"></div>
+        </div>
       </div>
     </div>
 
-    <!-- PASO 6 -->
+    </div>
+    <!-- PASO 5 -->
+    <div class="quote-section" id="section-cliente" hidden>
     <div class="panel">
-      <div class="panel-title">6 · Cliente y ajustes</div>
+      <div class="panel-title">Cliente y ajustes</div>
       <div class="panel-body">
         <div class="form-row">
           <div class="field">
@@ -638,6 +664,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
   </div>
 
@@ -692,6 +719,13 @@ function loadOverrides() {
   } catch (e) { return {}; }
 }
 let OV = loadOverrides();
+// Versiones anteriores guardaban precios finales de comida en OV.comida.
+// No se deben interpretar como costos netos de Carolina.
+if (OV.foodCostVersion !== 2) {
+  delete OV.comida;
+  OV.foodCostVersion = 2;
+  saveOverrides();
+}
 function saveOverrides() {
   try { localStorage.setItem('mp_admin_overrides', JSON.stringify(OV)); } catch (e) {}
 }
@@ -729,7 +763,29 @@ function setCabinOverride(cabId, temp, valor) {
 
 function getItemPrecio(catalogo, tipo, itemId, defaultPrecio) {
   const ov = OV[tipo] && OV[tipo][itemId];
+  if (tipo === 'comida') return ov !== undefined && ov !== null
+    ? Math.round(ov * (1 + getFoodMarkup() / 100) * 1.19)
+    : defaultPrecio;
   return (ov !== undefined && ov !== null) ? ov : defaultPrecio;
+}
+function getFoodMarkup() { return OV.foodMarkup ?? COMIDA.recargo ?? 20; }
+async function importarCostosCarolina(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    const costos = data.costos_netos;
+    const ids = COMIDA.categorias.flatMap(cat => cat.items.map(it => it.id));
+    if (!costos || ids.some(id => !Number.isFinite(costos[id]) || costos[id] < 0)) throw Error('Faltan costos válidos para algunos ítems.');
+    OV.comida = Object.fromEntries(ids.map(id => [id, costos[id]]));
+    OV.foodCostVersion = 2;
+    saveOverrides(); renderAdminModal(); renderComida(); calcular();
+    alert('Costos de Carolina cargados solo en este navegador.');
+  } catch (error) { alert('No se pudo cargar el archivo: ' + error.message); }
+}
+function setFoodMarkup(value) {
+  OV.foodMarkup = Math.min(100, Math.max(0, Number(value) || 0));
+  saveOverrides(); renderComida(); renderAdminModal(); calcular();
 }
 function setItemOverride(tipo, itemId, valor) {
   if (!OV[tipo]) OV[tipo] = {};
@@ -789,6 +845,11 @@ function getPrecioNoche(cabId, noches, temp) {
 }
 
 function fmt(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
+function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+function setQuoteSection(section) {
+  document.querySelectorAll('.quote-section').forEach(el => { el.hidden = el.id !== 'section-' + section; });
+  document.querySelectorAll('.quote-tab').forEach(el => el.classList.toggle('active', el.dataset.section === section));
+}
 
 // ─── ESTADO ─────────────────────────────────────────────────
 let cabanasSeleccionadas = new Set();
@@ -796,6 +857,35 @@ let tipoTarifa = 'diario';
 let comidaQty = {};   // { itemId: qty }
 let spaQty = {};      // { itemId: qty }
 let salonSel = {};    // { itemId: {cantidad, precio} } — cantidad y precio manuales, no vienen del catálogo
+let extrasEvento = [];
+let extraSeq = 0;
+function agregarExtraEvento() {
+  extrasEvento.push({id: ++extraSeq, nombre:'', cantidad:1, precio:0});
+  renderExtrasEvento(); calcular();
+}
+function editarExtraEvento(id, campo, valor) {
+  const extra = extrasEvento.find(item => item.id === id);
+  if (!extra) return;
+  extra[campo] = campo === 'nombre' ? valor : Math.max(0, Number(valor) || 0);
+  if (campo !== 'nombre') extra.cantidad = Math.round(extra.cantidad);
+  renderExtrasEvento(); calcular();
+}
+function eliminarExtraEvento(id) {
+  extrasEvento = extrasEvento.filter(item => item.id !== id);
+  renderExtrasEvento(); calcular();
+}
+function renderExtrasEvento() {
+  document.getElementById('extras-evento-body').innerHTML = extrasEvento.map(item => `
+    <div class="catalog-item manual">
+      <input aria-label="Concepto del ítem" type="text" placeholder="Concepto (ej. decoración especial)" value="${escapeHtml(item.nombre)}" onchange="editarExtraEvento(${item.id},'nombre',this.value)" style="min-width:180px;flex:1;padding:8px">
+      <div class="salon-item-controls">
+        <input aria-label="Cantidad" type="number" min="0" step="1" value="${item.cantidad}" onchange="editarExtraEvento(${item.id},'cantidad',this.value)" class="salon-qty-input">
+        <input aria-label="Precio unitario con IVA" type="number" min="0" step="100" placeholder="Precio unit. $" value="${item.precio || ''}" onchange="editarExtraEvento(${item.id},'precio',this.value)" class="manual-price-input">
+        <span class="salon-item-total">${item.precio ? fmt(item.cantidad * item.precio) : ''}</span>
+        <button class="admin-mini-btn" type="button" onclick="eliminarExtraEvento(${item.id})" aria-label="Quitar ítem">✕</button>
+      </div>
+    </div>`).join('');
+}
 let adminMode = false;
 let adminTab = 'cabanas';
 
@@ -853,9 +943,7 @@ function renderCatalogo(tipo, catalogo, containerId, qtyState) {
     const itemsHtml = cat.items.map(it => {
       const precio = getItemPrecio(catalogo, tipo, it.id, it.precio);
       const qty = qtyState[it.id] || 0;
-      const precioHtml = adminMode
-        ? `<input type="number" min="0" step="1" value="${precio}" onchange="setItemOverride('${tipo}','${it.id}',this.value); renderCatalogo('${tipo}', ${tipo === 'comida' ? 'COMIDA' : 'SPA'}, '${containerId}', ${tipo === 'comida' ? 'comidaQty' : 'spaQty'}); calcular();">`
-        : fmt(precio) + (cat.unidad === 'pp' || it.unidad === 'pp' ? ' pp' : '');
+      const precioHtml = fmt(precio) + (cat.unidad === 'pp' || it.unidad === 'pp' ? ' pp' : '');
       return `
         <div class="catalog-item">
           <div class="catalog-item-info">
@@ -1096,6 +1184,12 @@ function calcular() {
     subtotalSalon += total;
     salonLines.push({ label: it.nombre + (cantidad !== 1 ? ` × ${cantidad}` : ''), total });
   }));
+  extrasEvento.forEach(item => {
+    if (!item.nombre.trim() || !item.cantidad || !item.precio) return;
+    const total = item.cantidad * item.precio;
+    subtotalSalon += total;
+    salonLines.push({ label: item.nombre.trim() + (item.cantidad !== 1 ? ` × ${item.cantidad}` : ''), total });
+  });
 
   const hayAlgo = (hayCabanas && noches > 0) || subtotalComida > 0 || subtotalSpa > 0 || subtotalSalon > 0;
   if (!hayAlgo) { showEmpty(); return; }
@@ -1236,11 +1330,15 @@ function generarCotizacion() {
   const ninos = parseInt(document.getElementById('ninos').value) || 0;
   const mascotas = document.getElementById('mascotas').value === '1' ? 'Sí' : 'No';
 
+  // El total mostrado ya incluye IVA: cabañas/spa/salón conservan sus
+  // tarifas actuales y la comida convierte el costo neto a venta con IVA.
   const afecto = Math.round(totalFinal / 1.19);
   const iva = totalFinal - afecto;
 
   const fechaInVal = tipoTarifa === 'diario' ? document.getElementById('fecha-in').value : document.getElementById('fecha-mensual').value;
   const fechaOutVal = tipoTarifa === 'diario' ? document.getElementById('fecha-out').value : '';
+  const fechaEvento = document.getElementById('fecha-evento').value;
+  const asistentesEvento = document.getElementById('asistentes-evento').value;
   const fmtFecha = s => s ? s.split('-').reverse().join('/') : '—';
   const hoy = new Date().toLocaleDateString('es-CL');
   const numCot = getNumeroCotizacion();
@@ -1250,7 +1348,7 @@ function generarCotizacion() {
   const filasCab = nombresCabanas.map((c, i) => `<tr><td>${c.icon} ${c.nombre}</td><td>${c.dorms} dorm · ${c.banos} baño${c.banos > 1 ? 's' : ''} · hasta ${c.ocup} pax</td><td>${cabinLines[i] ? fmt(cabinLines[i].total) : ''}</td></tr>`).join('');
   const filasComida = comidaLines.map(l => `<tr><td colspan="2">🍽️ ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
   const filasSpa = spaLines.map(l => `<tr><td colspan="2">💆 ${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
-  const filasSalon = salonLines.map(l => `<tr><td colspan="2">${l.label}</td><td>${fmt(l.total)}</td></tr>`).join('');
+  const filasSalon = salonLines.map(l => `<tr><td colspan="2">${escapeHtml(l.label)}</td><td>${fmt(l.total)}</td></tr>`).join('');
   const normasSalon = getSalonNormas();
   const normasSalonHtml = (subtotalSalon > 0 && normasSalon.length) ? `
   <div class="obs-box">
@@ -1349,12 +1447,14 @@ table.items td{border-bottom:1px solid var(--arena);padding:7px 9px;}
   <div class="cliente-box">
     <div class="cliente-title">Datos del cliente</div>
     <div class="cliente-grid">
-      <div class="field">Nombre: <span>${nombre || '—'}</span></div>
+      <div class="field">Nombre: <span>${escapeHtml(nombre || '—')}</span></div>
       <div class="field">Tipo: <span>${tipoClienteLbl}</span></div>
       <div class="field">Fecha cotización: <span>${hoy}</span></div>
       <div class="field">Adultos: <span>${adultos}</span></div>
       <div class="field">Niños: <span>${ninos}</span></div>
       <div class="field">Mascotas: <span>${mascotas}</span></div>
+      ${(subtotalSalon > 0 || subtotalComida > 0) && fechaEvento ? '<div class="field">Evento: <span>' + fmtFecha(fechaEvento) + '</span></div>' : ''}
+      ${(subtotalSalon > 0 || subtotalComida > 0) && asistentesEvento ? '<div class="field">Asistentes: <span>' + asistentesEvento + '</span></div>' : ''}
     </div>
   </div>
 
@@ -1372,7 +1472,7 @@ table.items td{border-bottom:1px solid var(--arena);padding:7px 9px;}
       <tr><td>Temporada</td><td>${tempLabel(temp)}</td></tr>
       ${subtotalCabanas > 0 ? '<tr><td>Subtotal cabañas (' + totLbl + ')</td><td>' + fmt(subtotalCabanas) + '</td></tr>' : ''}
       ${descTotal > 0 && subtotalCabanas > 0 ? '<tr><td>Descuento ' + descTotal + '% (cabañas)</td><td>-' + fmt(descImporte) + '</td></tr>' : ''}
-      ${subtotalComida > 0 ? '<tr><td>Subtotal comida</td><td>' + fmt(subtotalComida) + '</td></tr>' : ''}
+      ${subtotalComida > 0 ? '<tr><td>Subtotal comidas de eventos</td><td>' + fmt(subtotalComida) + '</td></tr>' : ''}
       ${subtotalSpa > 0 ? '<tr><td>Subtotal spa</td><td>' + fmt(subtotalSpa) + '</td></tr>' : ''}
       ${subtotalSalon > 0 ? '<tr><td>Subtotal salón y montaje</td><td>' + fmt(subtotalSalon) + '</td></tr>' : ''}
       ${costoLateCheckout > 0 ? '<tr><td>Late check-out</td><td>' + fmt(costoLateCheckout) + '</td></tr>' : ''}
@@ -1525,15 +1625,16 @@ function renderAdminCabanas() {
 function renderAdminCatalogo(tipo, catalogo) {
   const secciones = catalogo.categorias.map(cat => {
     const rows = cat.items.map(it => {
-      const precio = getItemPrecio(catalogo, tipo, it.id, it.precio);
+      const precio = tipo === 'comida' ? (OV.comida?.[it.id] ?? '') : getItemPrecio(catalogo, tipo, it.id, it.precio);
       return `<tr>
         <td>${it.nombre}${it.detalle ? '<br><span style="color:var(--bruma);font-size:0.7rem">' + it.detalle + '</span>' : ''}</td>
-        <td><input type="number" step="100" value="${precio}" onchange="setItemOverride('${tipo}','${it.id}',this.value); render${tipo === 'comida' ? 'Comida' : 'Spa'}(); calcular();"></td>
+        <td><input type="number" min="0" step="100" value="${precio}" onchange="setItemOverride('${tipo}','${it.id}',this.value); render${tipo === 'comida' ? 'Comida' : 'Spa'}(); calcular();"></td>
       </tr>`;
     }).join('');
-    return `<span class="admin-cat-label">${cat.nombre}</span><table class="admin-table"><tr><th>Ítem</th><th>Precio</th></tr>${rows}</table>`;
+    return `<span class="admin-cat-label">${cat.nombre}</span><table class="admin-table"><tr><th>Ítem</th><th>${tipo === 'comida' ? 'Costo Carolina neto' : 'Precio de venta'}</th></tr>${rows}</table>`;
   }).join('');
-  return `<p class="admin-note">Los cambios se guardan automáticamente en este navegador.</p>${secciones}`;
+  const foodControl = tipo === 'comida' ? `<div class="admin-note"><label for="food-markup">Recargo de Mapulauquen sobre costo neto (%)</label> <input id="food-markup" type="number" min="0" max="100" step="1" value="${getFoodMarkup()}" onchange="setFoodMarkup(this.value)" style="width:70px;padding:6px"> <span>Venta con IVA = costo × (1 + recargo) × 1,19.</span><br><label for="import-costos">Cargar costos privados de Carolina (JSON):</label> <input id="import-costos" type="file" accept=".json,application/json" onchange="importarCostosCarolina(this)"><br>${OV.comida ? 'Costos cargados en este navegador.' : 'La carta usa precios de venta base hasta cargar los costos.'} Nunca subas este archivo privado a GitHub Pages.</div>` : '';
+  return `<p class="admin-note">Los cambios se guardan automáticamente en este navegador.</p>${foodControl}${secciones}`;
 }
 
 function renderAdminSalon() {
@@ -1721,6 +1822,7 @@ ${cabanasOut}
 },
 
 comida: {
+  recargo: ${getFoodMarkup()},
   categorias: ${comidaOut}
 },
 
@@ -1752,6 +1854,7 @@ renderCabanas();
 renderComida();
 renderSpa();
 renderSalon();
+renderExtrasEvento();
 </script>
 
 </body>

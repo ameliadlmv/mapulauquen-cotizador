@@ -143,44 +143,501 @@ precios: {
   }
 },
 
-// ─── COMIDA ─────────────────────────────────────────────────────
-// Fuente: cotización de comida oficial (Inmobiliaria Las Brizas SpA).
-// unidad: 'pp' = precio por persona · 'unidad' = precio por unidad/porción
+// ─── COMIDA PARA EVENTOS · COSTOS NETOS CAROLINA ─────────────
+// Solo precios de venta con IVA. Los costos netos privados se importan en cada navegador desde el archivo interno.
 comida: {
-  categorias: [
-    { id:'almuerzos', nombre:'Comidas (Almuerzos / Cenas)', unidad:'pp', nota:'Incluyen 1 pan amasado por persona.', items:[
-      { id:'cm01', nombre:'Tortilla de verduras con arroz, ensalada de lechuga y zanahoria', precio:8800 },
-      { id:'cm02', nombre:'Pollo a la plancha con arroz o papas doradas, ensalada de repollo colores y palta', precio:10450 },
-      { id:'cm03', nombre:'Pastel de papas (de carne o de pollo) con ensalada chilena', precio:10450 },
-      { id:'cm04', nombre:'Budín de verduras con papas doradas, ensalada surtida', precio:8800 },
-      { id:'cm05', nombre:'Hamburguesa de soya con puré, ensalada de repollo, zanahoria y palta', precio:9350 },
-    ]},
-    { id:'postres', nombre:'Postres', unidad:'unidad', nota:'Rinden 10 porciones cada uno (Kuchen y Pie de limón).', items:[
-      { id:'cm06', nombre:'Kuchen de durazno (10 porciones)', precio:15400 },
-      { id:'cm07', nombre:'Pie de limón (10 porciones)', precio:16500 },
-      { id:'cm08', nombre:'Alfajor de maicena (8 cm de diámetro)', precio:880 },
-    ]},
-    { id:'desayuno-aliados', nombre:'Desayunos · Aliados en pan molde', unidad:'unidad', items:[
-      { id:'cm09', nombre:'Aliado jamón queso', precio:2200 },
-      { id:'cm10', nombre:'Aliado hummus pesto', precio:2750 },
-      { id:'cm11', nombre:'Aliado pollo palta', precio:2750 },
-      { id:'cm12', nombre:'Aliado lechuga, tomate, queso y pesto', precio:2750 },
-    ]},
-    { id:'desayuno-sandwich', nombre:'Desayunos · Sándwich (pan de fabricación propia)', unidad:'unidad', items:[
-      { id:'cm13', nombre:'Ave, palta, mayo', precio:4400 },
-      { id:'cm14', nombre:'Hummus, tomate, palta', precio:4400 },
-      { id:'cm15', nombre:'Lechuga, tomate, queso, pesto', precio:4400 },
-      { id:'cm16', nombre:'Hamburguesa de soya, lechuga, tomate, palta', precio:4400 },
-    ]},
-    { id:'dulces', nombre:'Dulces', unidad:'unidad', items:[
-      { id:'cm17', nombre:'Galletón de avena con chips de chocolate', precio:880 },
-      { id:'cm18', nombre:'Queque de plátano glaseado', precio:880 },
-      { id:'cm19', nombre:'Queque de frambuesa glaseado', precio:880 },
-      { id:'cm20', nombre:'Queque de naranja glaseado', precio:880 },
-    ]},
-    { id:'pan', nombre:'Pan', unidad:'unidad', items:[
-      { id:'cm21', nombre:'Pan amasado (100 gramos)', precio:242 },
-    ]},
+  "recargo": 20,
+  "categorias": [
+    {
+      "id": "cat1",
+      "nombre": "Cóctel salado",
+      "items": [
+        {
+          "id": "ev01",
+          "nombre": "Empanadas de pino",
+          "detalle": "120 unidades",
+          "precio": 102816,
+          "unidad": "120 unidades"
+        },
+        {
+          "id": "ev02",
+          "nombre": "Empanadas de queso",
+          "detalle": "120 unidades",
+          "precio": 94248,
+          "unidad": "120 unidades"
+        },
+        {
+          "id": "ev03",
+          "nombre": "Mini brochetas queso, aceituna y cherry",
+          "detalle": "120 unidades",
+          "precio": 102816,
+          "unidad": "120 unidades"
+        },
+        {
+          "id": "ev04",
+          "nombre": "Canapés de ave, pimentón y ciboulette",
+          "detalle": "120 unidades",
+          "precio": 85680,
+          "unidad": "120 unidades"
+        },
+        {
+          "id": "ev05",
+          "nombre": "Canapés de pepino, atún y sésamo",
+          "detalle": "120 unidades",
+          "precio": 88536,
+          "unidad": "120 unidades"
+        },
+        {
+          "id": "ev06",
+          "nombre": "Canapés de queso crema, cherry y albahaca",
+          "detalle": "120 unidades",
+          "precio": 102816,
+          "unidad": "120 unidades"
+        },
+        {
+          "id": "ev07",
+          "nombre": "Mini crudos",
+          "detalle": "120 unidades",
+          "precio": 154224,
+          "unidad": "120 unidades"
+        }
+      ]
+    },
+    {
+      "id": "cat2",
+      "nombre": "Cóctel dulce",
+      "items": [
+        {
+          "id": "ev08",
+          "nombre": "Mini pie de limón",
+          "detalle": "120 unidades",
+          "precio": 119952,
+          "unidad": "120 unidades"
+        },
+        {
+          "id": "ev09",
+          "nombre": "Mini tarta de frambuesa",
+          "detalle": "120 unidades",
+          "precio": 137088,
+          "unidad": "120 unidades"
+        },
+        {
+          "id": "ev10",
+          "nombre": "Mini alfajores de maicena",
+          "detalle": "120 unidades",
+          "precio": 94248,
+          "unidad": "120 unidades"
+        },
+        {
+          "id": "ev11",
+          "nombre": "Mini tarta de durazno",
+          "detalle": "120 unidades",
+          "precio": 114240,
+          "unidad": "120 unidades"
+        },
+        {
+          "id": "ev12",
+          "nombre": "Mini brochetas de tres frutas",
+          "detalle": "120 unidades",
+          "precio": 77112,
+          "unidad": "120 unidades"
+        }
+      ]
+    },
+    {
+      "id": "cat3",
+      "nombre": "Entrada",
+      "items": [
+        {
+          "id": "ev13",
+          "nombre": "Crema de verduras a elección",
+          "detalle": "por persona",
+          "precio": 3570,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev14",
+          "nombre": "Crudo con tostadas, limón, mayonesa y pepinillo",
+          "detalle": "por persona",
+          "precio": 9996,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev15",
+          "nombre": "Timbal fresco de atún y palta",
+          "detalle": "por persona",
+          "precio": 7854,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev16",
+          "nombre": "Mosaico de ave y palta sobre pepino",
+          "detalle": "por persona",
+          "precio": 7854,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev17",
+          "nombre": "Ensalada César con pollo",
+          "detalle": "por persona",
+          "precio": 9282,
+          "unidad": "por persona"
+        }
+      ]
+    },
+    {
+      "id": "cat4",
+      "nombre": "Principal ceremonia",
+      "items": [
+        {
+          "id": "ev18",
+          "nombre": "Carne mechada, papas doradas y salsa de champiñones",
+          "detalle": "por persona",
+          "precio": 21420,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev19",
+          "nombre": "Carne mechada con pastelera y ensalada chilena",
+          "detalle": "por persona",
+          "precio": 22134,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev20",
+          "nombre": "Lasaña boloñesa con ensalada de hojas, cherry y parmesano",
+          "detalle": "por persona",
+          "precio": 19992,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev21",
+          "nombre": "Medallón de filete a la pimienta con puré",
+          "detalle": "por persona",
+          "precio": 24990,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev22",
+          "nombre": "Suprema de pollo al champiñón con papas gratinadas",
+          "detalle": "por persona",
+          "precio": 17136,
+          "unidad": "por persona"
+        }
+      ]
+    },
+    {
+      "id": "cat5",
+      "nombre": "Postre en vaso",
+      "items": [
+        {
+          "id": "ev23",
+          "nombre": "Tres leches",
+          "detalle": "unidad · Fuente sugiere 2–3 por comensal",
+          "precio": 1714,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev24",
+          "nombre": "Pie de limón",
+          "detalle": "unidad · Fuente sugiere 2–3 por comensal",
+          "precio": 1714,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev25",
+          "nombre": "Tiramisú",
+          "detalle": "unidad · Fuente sugiere 2–3 por comensal",
+          "precio": 2142,
+          "unidad": "unidad"
+        }
+      ]
+    },
+    {
+      "id": "cat6",
+      "nombre": "Ensalada para compartir",
+      "items": [
+        {
+          "id": "ev26",
+          "nombre": "Lechuga, cherry y queso",
+          "detalle": "plato / 6 personas",
+          "precio": 17850,
+          "unidad": "plato / 6 personas"
+        },
+        {
+          "id": "ev27",
+          "nombre": "Chilena",
+          "detalle": "plato / 6 personas",
+          "precio": 14280,
+          "unidad": "plato / 6 personas"
+        },
+        {
+          "id": "ev28",
+          "nombre": "Primavera",
+          "detalle": "plato / 6 personas",
+          "precio": 14280,
+          "unidad": "plato / 6 personas"
+        },
+        {
+          "id": "ev29",
+          "nombre": "Hojas verdes, cherry y parmesano",
+          "detalle": "plato / 6 personas",
+          "precio": 14994,
+          "unidad": "plato / 6 personas"
+        },
+        {
+          "id": "ev30",
+          "nombre": "Choclo, aceitunas y ciboulette",
+          "detalle": "plato / 6 personas",
+          "precio": 14994,
+          "unidad": "plato / 6 personas"
+        }
+      ]
+    },
+    {
+      "id": "cat7",
+      "nombre": "Complemento",
+      "items": [
+        {
+          "id": "ev31",
+          "nombre": "Pan amasado",
+          "detalle": "unidad / 80 g",
+          "precio": 428,
+          "unidad": "unidad / 80 g"
+        },
+        {
+          "id": "ev32",
+          "nombre": "Pebre",
+          "detalle": "mesa / 6 personas",
+          "precio": 6426,
+          "unidad": "mesa / 6 personas"
+        },
+        {
+          "id": "ev47",
+          "nombre": "Pan amasado",
+          "detalle": "unidad / 100 g",
+          "precio": 314,
+          "unidad": "unidad / 100 g"
+        }
+      ]
+    },
+    {
+      "id": "cat8",
+      "nombre": "Servicio",
+      "items": [
+        {
+          "id": "ev33",
+          "nombre": "Montaje, traslado y ayudante",
+          "detalle": "servicio · Sin vajilla ni bebestibles",
+          "precio": 314160,
+          "unidad": "servicio"
+        }
+      ]
+    },
+    {
+      "id": "cat9",
+      "nombre": "Aliado",
+      "items": [
+        {
+          "id": "ev34",
+          "nombre": "Aliado jamón y queso",
+          "detalle": "unidad",
+          "precio": 3142,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev35",
+          "nombre": "Aliado pollo y palta",
+          "detalle": "unidad",
+          "precio": 3856,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev36",
+          "nombre": "Aliado hummus y pesto",
+          "detalle": "unidad",
+          "precio": 3856,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev37",
+          "nombre": "Aliado queso y pesto",
+          "detalle": "unidad",
+          "precio": 3856,
+          "unidad": "unidad"
+        }
+      ]
+    },
+    {
+      "id": "cat10",
+      "nombre": "Sándwich",
+      "items": [
+        {
+          "id": "ev38",
+          "nombre": "Ave, palta y mayonesa",
+          "detalle": "unidad",
+          "precio": 6426,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev39",
+          "nombre": "Hummus, tomate y palta",
+          "detalle": "unidad",
+          "precio": 6426,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev40",
+          "nombre": "Lechuga, tomate, queso y pesto",
+          "detalle": "unidad",
+          "precio": 6426,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev41",
+          "nombre": "Hamburguesa de soya, lechuga, tomate y palta",
+          "detalle": "unidad",
+          "precio": 6426,
+          "unidad": "unidad"
+        }
+      ]
+    },
+    {
+      "id": "cat11",
+      "nombre": "Dulce individual",
+      "items": [
+        {
+          "id": "ev42",
+          "nombre": "Alfajor de maicena",
+          "detalle": "unidad",
+          "precio": 1428,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev43",
+          "nombre": "Galletón de avena con chips de chocolate",
+          "detalle": "unidad",
+          "precio": 1428,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev44",
+          "nombre": "Queque de plátano glaseado",
+          "detalle": "unidad",
+          "precio": 1428,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev45",
+          "nombre": "Queque de naranja glaseado",
+          "detalle": "unidad",
+          "precio": 1428,
+          "unidad": "unidad"
+        },
+        {
+          "id": "ev46",
+          "nombre": "Queque de frambuesa glaseado",
+          "detalle": "unidad",
+          "precio": 1428,
+          "unidad": "unidad"
+        }
+      ]
+    },
+    {
+      "id": "cat12",
+      "nombre": "Almuerzo",
+      "items": [
+        {
+          "id": "ev48",
+          "nombre": "Pollo a la plancha, arroz o papas doradas y ensalada de repollo y palta",
+          "detalle": "por persona · Entrega caliente: empaque +$1.000 netos por almuerzo",
+          "precio": 13566,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev49",
+          "nombre": "Pastel de papas con ensalada chilena",
+          "detalle": "por persona · Entrega caliente: empaque +$1.000 netos por almuerzo",
+          "precio": 13566,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev50",
+          "nombre": "Budín de verduras con papas doradas",
+          "detalle": "por persona · Entrega caliente: empaque +$1.000 netos por almuerzo",
+          "precio": 11424,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev51",
+          "nombre": "Hamburguesa de soya con puré y ensalada",
+          "detalle": "por persona · Entrega caliente: empaque +$1.000 netos por almuerzo",
+          "precio": 12138,
+          "unidad": "por persona"
+        },
+        {
+          "id": "ev52",
+          "nombre": "Tortilla de verduras con arroz y ensalada",
+          "detalle": "por persona · Entrega caliente: empaque +$1.000 netos por almuerzo",
+          "precio": 11424,
+          "unidad": "por persona"
+        }
+      ]
+    },
+    {
+      "id": "cat13",
+      "nombre": "Postre",
+      "items": [
+        {
+          "id": "ev53",
+          "nombre": "Kuchen de durazno",
+          "detalle": "entero",
+          "precio": 20706,
+          "unidad": "entero"
+        },
+        {
+          "id": "ev54",
+          "nombre": "Pie de limón entero",
+          "detalle": "entero",
+          "precio": 22134,
+          "unidad": "entero"
+        },
+        {
+          "id": "ev55",
+          "nombre": "Tartaleta de frutas con crema pastelera",
+          "detalle": "entero",
+          "precio": 19992,
+          "unidad": "entero"
+        },
+        {
+          "id": "ev56",
+          "nombre": "Duraznos y frambuesa con crema y leche condensada",
+          "detalle": "porción",
+          "precio": 2285,
+          "unidad": "porción"
+        }
+      ]
+    },
+    {
+      "id": "cat14",
+      "nombre": "Logística",
+      "items": [
+        {
+          "id": "ev57",
+          "nombre": "Empaque para almuerzo caliente",
+          "detalle": "por almuerzo",
+          "precio": 1428,
+          "unidad": "por almuerzo"
+        },
+        {
+          "id": "ev58",
+          "nombre": "Transporte",
+          "detalle": "por viaje",
+          "precio": 8568,
+          "unidad": "por viaje"
+        }
+      ]
+    }
   ]
 },
 
