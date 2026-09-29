@@ -333,21 +333,21 @@ comida: {
         {
           "id": "ev23",
           "nombre": "Tres leches",
-          "detalle": "unidad · Fuente sugiere 2–3 por comensal",
+          "detalle": "unidad · Se sugieren 2–3 por comensal",
           "precio": 1714,
           "unidad": "unidad"
         },
         {
           "id": "ev24",
           "nombre": "Pie de limón",
-          "detalle": "unidad · Fuente sugiere 2–3 por comensal",
+          "detalle": "unidad · Se sugieren 2–3 por comensal",
           "precio": 1714,
           "unidad": "unidad"
         },
         {
           "id": "ev25",
           "nombre": "Tiramisú",
-          "detalle": "unidad · Fuente sugiere 2–3 por comensal",
+          "detalle": "unidad · Se sugieren 2–3 por comensal",
           "precio": 2142,
           "unidad": "unidad"
         }
@@ -550,35 +550,35 @@ comida: {
         {
           "id": "ev48",
           "nombre": "Pollo a la plancha, arroz o papas doradas y ensalada de repollo y palta",
-          "detalle": "por persona · Entrega caliente: empaque +$1.000 netos por almuerzo",
+          "detalle": "por persona · Empaque para entrega caliente se cotiza por separado",
           "precio": 13566,
           "unidad": "por persona"
         },
         {
           "id": "ev49",
           "nombre": "Pastel de papas con ensalada chilena",
-          "detalle": "por persona · Entrega caliente: empaque +$1.000 netos por almuerzo",
+          "detalle": "por persona · Empaque para entrega caliente se cotiza por separado",
           "precio": 13566,
           "unidad": "por persona"
         },
         {
           "id": "ev50",
           "nombre": "Budín de verduras con papas doradas",
-          "detalle": "por persona · Entrega caliente: empaque +$1.000 netos por almuerzo",
+          "detalle": "por persona · Empaque para entrega caliente se cotiza por separado",
           "precio": 11424,
           "unidad": "por persona"
         },
         {
           "id": "ev51",
           "nombre": "Hamburguesa de soya con puré y ensalada",
-          "detalle": "por persona · Entrega caliente: empaque +$1.000 netos por almuerzo",
+          "detalle": "por persona · Empaque para entrega caliente se cotiza por separado",
           "precio": 12138,
           "unidad": "por persona"
         },
         {
           "id": "ev52",
           "nombre": "Tortilla de verduras con arroz y ensalada",
-          "detalle": "por persona · Entrega caliente: empaque +$1.000 netos por almuerzo",
+          "detalle": "por persona · Empaque para entrega caliente se cotiza por separado",
           "precio": 11424,
           "unidad": "por persona"
         }
