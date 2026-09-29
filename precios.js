@@ -695,13 +695,14 @@ salon: {
   // algún ítem de salón (panel y cotización imprimible). Editables
   // desde Modo Admin > Salón.
   normas: [
-    'Capacidad máxima 80 personas',
-    'El salón se debe dejar en las condiciones en las que fue entregado',
-    '6 horas de uso',
-    'Ruido fuerte máximo hasta las 12:00 hrs',
-    'Entrega del salón máximo 2:00 AM',
-    'Informar cuántos estacionamientos necesitan',
-    'Ante daños se podrán aplicar cargos adicionales',
+    'Capacidad máxima: 80 personas. El número de asistentes debe confirmarse antes del evento.',
+    'El arriendo contempla 6 horas de uso, en el horario acordado en la reserva. Cualquier extensión requiere disponibilidad y cotización previa.',
+    'La música y los ruidos fuertes deben finalizar a las 00:00 hrs. El salón debe entregarse a más tardar a las 02:00 hrs, dentro del horario de uso acordado.',
+    'Se debe informar con anticipación cuántos estacionamientos se necesitan. Mapulauquen coordinará los cupos disponibles y enviará el detalle de ubicación asignada para cada vehículo.',
+    'El salón, mobiliario y vajilla deben entregarse ordenados y en las condiciones recibidas, incluso si se contrata el servicio de aseo. El aseo contratado no incluye ordenar pertenencias ni reparar daños.',
+    'El arriendo incluye mobiliario y vajilla disponibles para hasta 30 personas. Desde la persona 31 se aplica un valor adicional por persona, que se indicará en la cotización.',
+    'Mesas, sillas, manteles, vajilla u otros elementos adicionales se cotizan por separado según disponibilidad y deben quedar incluidos en la cotización aceptada.',
+    'Los daños o pérdidas atribuibles al evento se informarán con su respaldo y costo de reposición o reparación antes de efectuar cualquier cobro adicional.',
   ]
 }
 
